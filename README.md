@@ -1,2 +1,2 @@
-# archaea
+# Archaea
 Playground for Geometry
