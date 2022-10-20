@@ -1,4 +1,4 @@
-from coordinate_array import CoordinateArray
+from .coordinate_array import CoordinateArray
 
 
 # Dimensionless vector for integer and float values.
@@ -27,7 +27,7 @@ class Vector(CoordinateArray):
 
         return abs(self.dot(other)) < tolerance * self.magnitude() * other.magnitude()
 
-    def normalize(self, tolerance: 1e-10):
+    def normalize(self, tolerance=1e-10):
         if abs(self.magnitude() - 1) < tolerance:
             return self
 

@@ -1,8 +1,9 @@
-from coordinate_array import CoordinateArray
+from .coordinate_array import CoordinateArray
+from .vector import Vector
 
 
 # 3 dimensional vector.
-class Vector3d(CoordinateArray):
+class Vector3d(Vector):
     def __init__(self, *coordinates):
         filtered_coordinates = [entry for entry in coordinates if isinstance(entry, (int, float))]
         self.coordinates = filtered_coordinates[:3]

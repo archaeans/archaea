@@ -32,7 +32,7 @@ class VectorAdditionTest(unittest.TestCase):
 
     def test_dimension(self):
         # Assert
-        self.assertEqual(Setup.vector_3.dimension(), 4)
+        self.assertEqual(Setup.vector_3.dimension, 4)
 
 
 if __name__ == '__main__':
