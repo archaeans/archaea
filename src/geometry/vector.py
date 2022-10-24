@@ -31,7 +31,9 @@ class Vector(CoordinateArray):
         if abs(self.magnitude() - 1) < tolerance:
             return self
 
-        return self.scale(1.0 / self.magnitude())
+        normalized_vector = self.scale(1.0 / self.magnitude())
+        return self.__class__(*normalized_vector)
 
     def reverse(self):
-        return self.scale(-1.0)
+        scaled_vector = self.scale(-1.0)
+        return self.__class__(*scaled_vector)
