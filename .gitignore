@@ -183,3 +183,6 @@ fabric.properties
 
 # idea folder, comment out if you need same configuration files computers
 .idea
+
+# format folder
+src/format/export/*
