@@ -1,5 +1,5 @@
-from point2d import Point2d
-from vector3d import Vector3d
+from .point2d import Point2d
+from .vector3d import Vector3d
 
 
 class Border2d:
