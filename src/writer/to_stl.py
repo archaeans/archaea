@@ -1,9 +1,9 @@
 from typing import TextIO
 from pathlib import Path
 
-from src.geometry.border3d import Border3d
+from src.geometry.border import Border3d
 from src.geometry.point3d import Point3d
-from src.geometry.triangle3d import Triangle3d
+from src.geometry.triangle import Triangle3d
 
 p1 = Point3d(0, 0, 0)
 p2 = Point3d(10, 0, 0)

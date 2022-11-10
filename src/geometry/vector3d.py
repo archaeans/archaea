@@ -1,5 +1,5 @@
-from .coordinate_array import CoordinateArray
-from .vector import Vector
+from src.geometry.coordinate_array import CoordinateArray
+from src.geometry.vector import Vector
 
 
 # 3 dimensional vector.

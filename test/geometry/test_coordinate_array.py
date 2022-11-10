@@ -60,3 +60,7 @@ class TestCoordinateArray(unittest.TestCase):
 
         # Assert
         self.assertEqual(scaled_coordinate_array.coordinates, [0, 3, 6])
+
+
+if __name__ == '__main__':
+    unittest.main()

@@ -1,5 +1,5 @@
-from .coordinate_array import CoordinateArray
-from .vector3d import Vector3d
+from src.geometry.coordinate_array import CoordinateArray
+from src.geometry.vector3d import Vector3d
 
 
 # 3 dimensional point.

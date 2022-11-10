@@ -1,5 +1,5 @@
-from .coordinate_array import CoordinateArray
-from .vector2d import Vector2d
+from coordinate_array import CoordinateArray
+from vector2d import Vector2d
 
 
 # 2 dimensional point.

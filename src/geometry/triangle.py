@@ -1,10 +1,10 @@
 import functools
-from .border3d import Border3d
-from .vector3d import Vector3d
-from .point3d import Point3d
+from vector3d import Vector3d
+from point3d import Point3d
+from border import Border
 
 
-class Triangle3d(Border3d):
+class Triangle(Border):
     points: "list[Point3d]"
 
     def __init__(self, points: "list[Point3d]"):
@@ -14,7 +14,7 @@ class Triangle3d(Border3d):
         if points[0] != points[-1]:
             raise Exception("First and last point of Triangle3d should be identical to define closed face.")
 
-        Border3d.__init__(self, points=points)
+        Border.__init__(self, points=points)
 
     @functools.cached_property
     def normal(self):
