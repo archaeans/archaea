@@ -15,7 +15,7 @@ class Setup(unittest.TestLoader):
 class TestLoop3d(unittest.TestCase):
     def test_close_loop(self):
         # Act
-        border = Border.create_as_closed([Setup.p1, Setup.p2, Setup.p3])
+        border = Border([Setup.p1, Setup.p2, Setup.p3])
 
         # Assert
         self.assertEqual(len(border.points), 4)
