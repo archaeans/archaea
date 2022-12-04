@@ -4,6 +4,7 @@ from src.geometry.vector3d import Vector3d
 from src.geometry.line_segment import LineSegment
 from src.geometry.polyline import Polyline
 from src.geometry.plane import Plane
+from src.geometry.utils import area
 import numpy as np
 
 
@@ -25,15 +26,9 @@ class Border:
 
     @functools.cached_property
     def area(self):
-        x = []
-        y = []
-        z = []
-        for point in self.points:
-            x.append(point.x)
-            y.append(point.y)
-            z.append(point.z)
-        area = 0.5 * np.abs(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1)))
-        return area
+        poly = [point.to_a() for point in self.points]
+        print(poly)
+        return area(poly)
 
     @functools.cached_property
     def segment_count(self):
