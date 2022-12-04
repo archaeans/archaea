@@ -27,7 +27,6 @@ class Border:
     @functools.cached_property
     def area(self):
         poly = [point.to_a() for point in self.points]
-        print(poly)
         return area(poly)
 
     @functools.cached_property

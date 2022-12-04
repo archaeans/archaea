@@ -19,7 +19,7 @@ class Setup(unittest.TestLoader):
 
     wall_border = Border([p1, p2, p3, p4])
     window_border = Border([p8, p7, p6, p5])
-    wall = Wall(wall_border, [window_border], WallType.OUTER)
+    wall = Wall([p1, p2, p3, p4], [window_border], WallType.OUTER)
 
 
 class TestLoop3d(unittest.TestCase):
@@ -33,7 +33,7 @@ class TestLoop3d(unittest.TestCase):
 
     def test_wall_area(self):
         # Assert
-        self.assertEqual(Setup.wall.openings[0].area, 2.25)
+        self.assertEqual(Setup.wall.area, 15)
 
     def test_opening_area(self):
         # Assert
