@@ -1,11 +1,11 @@
-from src.geometry.border import Border
+from src.geometry.face import Face
 from src.simulation_objects.zone import Zone
 
 
 class Domain:
-    border: Border
+    border: Face
     height: float
-    context: "list[Border]"
+    context: "list[Face]"
     zones: "list[Zone]"
 
     def __init__(self, border, height, zones):

@@ -1,7 +1,7 @@
 import unittest
 from src.geometry.point3d import Point3d
 from src.geometry.vector3d import Vector3d
-from src.geometry.border import Border
+from src.geometry.face import Face
 from src.simulation_objects.wall import Wall
 from src.simulation_objects.wall_type import WallType
 
@@ -17,8 +17,8 @@ class Setup(unittest.TestLoader):
     p7 = Point3d(3, 0, 2.4)
     p8 = Point3d(1.5, 0, 2.4)
 
-    wall_border = Border([p1, p2, p3, p4])
-    window_border = Border([p8, p7, p6, p5])
+    wall_border = Face([p1, p2, p3, p4])
+    window_border = Face([p8, p7, p6, p5])
     wall = Wall([p1, p2, p3, p4], [window_border], WallType.OUTER)
 
 

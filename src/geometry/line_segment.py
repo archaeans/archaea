@@ -4,6 +4,7 @@ from src.geometry.point3d import Point3d
 from src.geometry.vector3d import Vector3d
 
 
+
 # FIXME: Inherit later from base LineSegment object to cover common functionality
 #  to prevent duplicated codes
 class LineSegment:
@@ -32,4 +33,7 @@ class LineSegment:
         end = self.end
         extruded_start = start.move(vector)
         extruded_end = end.move(vector)
-        return Border([start, end, extruded_end, extruded_start])
+        from src.geometry.loop import Loop
+        from src.geometry.face import Face
+        loop = Loop([start, end, extruded_end, extruded_start])
+        return Face(loop)

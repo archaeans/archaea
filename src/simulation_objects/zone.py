@@ -1,14 +1,14 @@
-from src.geometry.border import Border
+from src.geometry.face import Face
 from src.geometry.vector3d import Vector3d
 
 
 class Zone:
-    floor: Border
-    ceiling: Border
-    walls: "list[Border]"
+    floor: Face
+    ceiling: Face
+    walls: "list[Face]"
     height: float
     volume: float
-    openings: "list[Border]"
+    openings: "list[Face]"
 
     def __init__(self, border, height, walls=None):
         self.floor = border
@@ -22,7 +22,7 @@ class Zone:
             self.walls = walls
 
     def create_walls(self, move_vector):
-        wall_lines = self.floor.segments
+        wall_lines = self.floor.outer_loop.segments
         walls = []
         for line in wall_lines:
             border = line.extrude(move_vector)

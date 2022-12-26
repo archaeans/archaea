@@ -1,7 +1,7 @@
 from typing import TextIO
 from pathlib import Path
 
-from src.geometry.border import Border
+from src.geometry.face import Face
 from src.geometry.point3d import Point3d
 from src.geometry.triangle import Triangle
 
@@ -34,7 +34,7 @@ triangle_back_1 = Triangle([p4, p8, p7, p4])
 triangle_back_2 = Triangle([p4, p7, p3, p4])
 
 
-def border_to_stl(file: TextIO, border: Border):
+def border_to_stl(file: TextIO, border: Face):
     file.write("facet normal {x} {y} {z}\n".format(x=border.normal.x, y=border.normal.y, z=border.normal.z))
     file.write("outer loop\n")
     for vertex in border.points[0:-1]:
@@ -43,7 +43,7 @@ def border_to_stl(file: TextIO, border: Border):
     file.write("endfacet\n")
 
 
-def to_stl(solid_name: str, borders: "list[Border]", export_name: str, path: str = None):
+def to_stl(solid_name: str, borders: "list[Face]", export_name: str, path: str = None):
     filtered_borders = [border for border in borders if len(border.points) == 4]
     if path is None:
         current_path = Path.cwd()
