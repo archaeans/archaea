@@ -1,11 +1,13 @@
 import unittest
 from src.geometry.vector import Vector
+from src.geometry.vector3d import Vector3d
 
 
 class Setup(unittest.TestLoader):
     vector_1 = Vector(0, 1, 2)
     vector_2 = Vector(1, -1, 4)
     vector_3 = Vector(1, -1, 2.0, 4, "a")
+    vector_4_3d = Vector3d(1, 1, 2)
 
 
 class VectorAdditionTest(unittest.TestCase):
@@ -33,6 +35,10 @@ class VectorAdditionTest(unittest.TestCase):
     def test_dimension(self):
         # Assert
         self.assertEqual(Setup.vector_3.dimension, 4)
+
+    def test_azimuth_angle(self):
+        # Assert
+        self.assertEqual(Setup.vector_4_3d.azimuth_angle(), 45)
 
 
 if __name__ == '__main__':

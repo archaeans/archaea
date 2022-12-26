@@ -1,3 +1,5 @@
+import math
+
 from src.geometry.coordinate_array import CoordinateArray
 from src.geometry.vector import Vector
 
@@ -27,3 +29,17 @@ class Vector3d(Vector):
             (self.z * other.x) - (self.x * other.z),
             (self.x * other.y) - (self.y * other.x)
         )
+
+    def azimuth_angle(self):
+        result = 0
+        if self.x > 0:
+            result = (math.pi * 0.5) - math.atan(self.y / self.x)
+        elif self.x < 0:
+            result = (math.pi * 1.5) - math.atan(self.y / self.x)
+        elif self.y > 0:
+            result = 0
+        elif self.y < 0:
+            result = math.pi
+
+        return math.degrees(result)
+
