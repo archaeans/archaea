@@ -13,6 +13,9 @@ class LineSegment:
         self.start = start
         self.end = end
 
+    def __eq__(self, other):
+        return self.start == other.start and self.end == other.end
+
     @classmethod
     def from_point_and_vector(cls, start: Point3d, vector: Vector3d):
         end_point = start.move(vector)
@@ -37,7 +40,7 @@ class LineSegment:
 
     def is_point_on_segment(self, point: Point3d):
         parameter = self.parameter_at(point)
-        return self.is_point_on_line(point) & parameter >= 0 & parameter <= 1
+        return self.is_point_on_line(point) and 0 <= parameter <= 1
 
     def closest_point(self, point: Point3d):
         closest_parameter = self.closest_point_parameter(point)

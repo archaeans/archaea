@@ -5,10 +5,13 @@ from src.geometry.line_segment import LineSegment
 
 class Setup(unittest.TestLoader):
     point3d_1 = Point3d(0, 0, 0)
+    point3d_1_2 = Point3d(0, 0, 0)
     point3d_2 = Point3d(5, 0, 0)
+    point3d_2_2 = Point3d(5, 0, 0)
     point3d_on_line = Point3d(1, 0, 0)
     point3d_not_on_line = Point3d(2, 1, 0)
     line_segment = LineSegment(point3d_1, point3d_2)
+    line_segment_2 = LineSegment(point3d_1_2, point3d_2_2)
 
 
 class TestLineSegment(unittest.TestCase):
@@ -37,3 +40,7 @@ class TestLineSegment(unittest.TestCase):
     def test_closest_point(self):
         # Assert
         self.assertEqual(Setup.line_segment.closest_point(Setup.point3d_not_on_line), Point3d(2, 0, 0))
+
+    def test_equilibrium(self):
+        # Assert
+        self.assertTrue(Setup.line_segment == Setup.line_segment_2)
