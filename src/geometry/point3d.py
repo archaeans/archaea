@@ -24,6 +24,7 @@ class Point3d(CoordinateArray):
     def to_a(self):
         return [self.x, self.y, self.z]
 
+    @property
     def position_vector(self):
         return Vector3d(self.x, self.y, self.z)
 

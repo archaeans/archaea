@@ -23,6 +23,10 @@ class Vector3d(Vector):
     def z(self):
         return self.coordinates[2]
 
+    @property
+    def length(self):
+        return ((self.x ** 2) + (self.y ** 2) + (self.z ** 2)) ** 0.5
+
     def cross_product(self, other):
         return Vector3d(
             (self.y * other.z) - (self.z * other.y),

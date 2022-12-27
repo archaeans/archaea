@@ -29,7 +29,4 @@ class Mesh:
     def to_stl(self, path, file_name):
         vertices = np.array([vertex.to_a() for vertex in self.vertices])
         faces = np.array(self.polygons)
-        print(vertices)
-        print(faces)
-
         to_stl(faces, vertices, file_name)

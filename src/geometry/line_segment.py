@@ -54,6 +54,41 @@ class LineSegment:
     def closest_point_parameter(self, point: Point3d):
         return self.vector.dot(self.start.vector_to(point)) / self.length**2
 
+    def distance_to_point(self, point: Point3d):
+        closest_point = self.closest_point(point)
+        return closest_point.distance_to(point)
+
+    def distance_to_segment(self, segment):
+        if self.is_intersects(segment):
+            return 0
+        distances = [
+            self.distance_to_point(segment.start),
+            self.distance_to_point(segment.end),
+            segment.distance_to_point(self.start),
+            segment.distance_to_point(self.end)
+        ]
+        return min(distances)
+
+    # Thanks to https://stackoverflow.com/questions/55220355/how-to-detect-whether-two-segments-in-3d-space-intersect
+    def is_intersects(self, segment):
+        p1 = self.start.position_vector
+        p2 = self.end.position_vector
+        q1 = segment.start.position_vector
+        q2 = segment.end.position_vector
+        p_segment_vector = p2 - p1
+        q_segment_vector = q2 - q1
+        qp_distance_vector = q1 - p1
+        p_length = self.length
+
+        a = p_segment_vector.dot(qp_distance_vector) / p_length**2
+        b = p_segment_vector.dot(q_segment_vector) / p_length**2
+        c = p_segment_vector.scale(b) - q_segment_vector
+
+        t1 = c.dot(q1 - p1.scale(1 - a) - p2.scale(a)) / c.length**2
+        t0 = a + (t1 * b)
+        is_intersects = (0 <= t0 <= 1) and (0 <= t1 <= 1)
+        return is_intersects
+
     def extrude(self, vector):
         start = self.start
         end = self.end
