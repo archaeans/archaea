@@ -1,8 +1,6 @@
 import functools
-
 from src.geometry.point3d import Point3d
 from src.geometry.vector3d import Vector3d
-
 
 
 # FIXME: Inherit later from base LineSegment object to cover common functionality
@@ -24,9 +22,26 @@ class LineSegment:
     def length(self):
         return self.start.distance_to(self.end)
 
+    @functools.cached_property
+    def vector(self):
+        return self.start.vector_to(self.end)
+
     def point_at(self, t: float) -> Point3d:
-        vector = self.start.vector_to(self.end)
-        return self.start + vector.scale(t)
+        return self.start + self.vector.scale(t)
+
+    def parameter_at(self, point: Point3d):
+        return self.start.vector_to(point).dot(self.vector) / self.vector.magnitude()**2
+
+    def is_point_on_line(self, point: Point3d):
+        return point == self.point_at(self.parameter_at(point))
+
+    def is_point_on_segment(self, point: Point3d):
+        parameter = self.parameter_at(point)
+        return self.is_point_on_line(point) & parameter >= 0 & parameter <= 1
+
+    def closest_point(self, point: Point3d):
+        closest_parameter = self.parameter_at(point)
+        return self.point_at(closest_parameter)
 
     def extrude(self, vector):
         start = self.start

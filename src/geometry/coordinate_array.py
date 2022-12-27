@@ -41,8 +41,8 @@ class CoordinateArray(list):
 
     def add(self, vector_2):
         summed_coordinates = [value_1 + value_2 for (value_1, value_2) in zip(self, vector_2)]
-        return CoordinateArray(*summed_coordinates)
+        return self.__class__(*summed_coordinates)
 
     def scale(self, scale):
         scaled_coordinates = [coordinate * scale for coordinate in self.coordinates]
-        return CoordinateArray(*scaled_coordinates)
+        return self.__class__(*scaled_coordinates)

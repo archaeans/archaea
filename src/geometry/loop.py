@@ -7,7 +7,7 @@ from src.geometry.plane import Plane
 from src.geometry.utils import area
 
 
-class Loop:
+class Loop(Polyline):
     points: "list[Point3d]"
     normal: Vector3d
 
@@ -15,6 +15,7 @@ class Loop:
         if points[-1] != points[0]:
             points.append(points[0])
         self.points = points
+        super().__init__(self.points)
         self.normal = self._calculate_normal(self.points)
 
     @functools.cached_property
@@ -36,9 +37,6 @@ class Loop:
         u: Vector3d = self.points[0].vector_to(self.points[1])
         v: Vector3d = self.points[0].vector_to(self.points[2])
         return Plane(self.points[0], u, v)
-
-    def to_polyline(self):
-        return Polyline(self.segments)
 
     def to_face(self):
         from src.geometry.face import Face

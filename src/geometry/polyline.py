@@ -4,10 +4,16 @@ from src.geometry.point3d import Point3d
 
 
 class Polyline:
-    segments: "list[LineSegment]"
+    points: "list[Point3d]"
 
-    def __init__(self, segments: "list[LineSegment]"):
-        self.segments = segments
+    def __init__(self, points: "list[Point3d]"):
+        self.points = points
+
+    @functools.cached_property
+    def segments(self):
+        consecutive_pairs = [[self.points[i], self.points[i + 1]]
+                             for i in range(len(self.points) - 1)]
+        return [LineSegment(start, end) for [start, end] in consecutive_pairs]
 
     @functools.cached_property
     def segment_count(self):

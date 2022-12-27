@@ -41,7 +41,7 @@ class TestMesh(unittest.TestCase):
         # Assert
         self.assertEqual(len(mesh.vertices), 4)
         self.assertEqual(len(mesh.polygons), 2)
-        self.assertEqual(mesh.polygons, [[0, 1, 2], [1, 2, 3]])
+        self.assertEqual(mesh.polygons, [[0, 1, 2], [0, 2, 3]])
 
     def test_multiple_polygon_to_stl(self):
         # Arrange

@@ -13,7 +13,7 @@ class Setup(unittest.TestLoader):
     loop_rectangle = Loop([p1, p2, p3, p4])
 
 
-class TestLoop3d(unittest.TestCase):
+class TestLoop(unittest.TestCase):
     def test_close_loop(self):
         # Assert
         self.assertEqual(len(Setup.loop_triangle.points), 4)
