@@ -40,8 +40,16 @@ class LineSegment:
         return self.is_point_on_line(point) & parameter >= 0 & parameter <= 1
 
     def closest_point(self, point: Point3d):
-        closest_parameter = self.parameter_at(point)
-        return self.point_at(closest_parameter)
+        closest_parameter = self.closest_point_parameter(point)
+        if closest_parameter <= 0:
+            return self.start
+        elif closest_parameter >= 1:
+            return self.end
+        else:
+            return self.point_at(closest_parameter)
+
+    def closest_point_parameter(self, point: Point3d):
+        return self.vector.dot(self.start.vector_to(point)) / self.length**2
 
     def extrude(self, vector):
         start = self.start
