@@ -7,12 +7,32 @@ from src.geometry.mesh import Mesh
 
 
 class Setup(unittest.TestLoader):
+    # outer loop
     p0 = Point3d(0, 0, 0)
     p1 = Point3d(10, 0, 0)
     p2 = Point3d(10, 10, 0)
     p3 = Point3d(0, 10, 0)
-    face_rectangle = Face(Loop([p0, p1, p2, p3]))
 
+    # inner loop - 1
+    p4 = Point3d(2, 2, 0)
+    p5 = Point3d(4, 2, 0)
+    p6 = Point3d(4, 4, 0)
+    p7 = Point3d(2, 4, 0)
+
+    # inner loop - 2
+    p8 = Point3d(5, 5, 0)
+    p9 = Point3d(7, 5, 0)
+    p10 = Point3d(7, 7, 0)
+    p11 = Point3d(5, 7, 0)
+
+    # loops
+    outer_loop = Loop([p0, p1, p2, p3])
+    inner_loop_1 = Loop([p4, p5, p6, p7])
+    inner_loop_2 = Loop([p8, p9, p10, p11])
+
+    # faces
+    face_rectangle = Face(Loop([p0, p1, p2, p3]))
+    face_rectangle_with_holes = Face(outer_loop, [inner_loop_1, inner_loop_2])
     face_triangle_1 = Face(Loop([p0, p1, p2]))
     face_triangle_2 = Face(Loop([p0, p2, p3]))
 
@@ -60,3 +80,11 @@ class TestMesh(unittest.TestCase):
         # Act
         mesh.add_from_faces(extruded_faces)
         mesh.to_stl("", "test_box")
+
+    def test_face_with_holes(self):
+        # Arrange
+        mesh = Mesh()
+
+        # Act
+        mesh.add_from_face(Setup.face_rectangle_with_holes)
+        mesh.to_stl("", "test_face_with_hole")

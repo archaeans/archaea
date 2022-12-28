@@ -1,6 +1,7 @@
 import functools
 from src.geometry.vector3d import Vector3d
 from src.geometry.loop import Loop
+from src.eatcut.earcut import earcut
 
 
 class Face:
@@ -47,12 +48,26 @@ class Face:
         return all_faces
 
     def mesh_polygon_vertices(self):
-        # TODO: This method should be improved with triangulation algorithms that considers also holes.
-        if len(self.inner_loops) == 0:
-            # FIXME: Currently support only faces have 4 vertices
-            points: "list[Point3d]" = self.outer_loop.points
-            return [[points[0], points[1], points[2]], [points[0], points[2], points[3]]]
-        else:
-            raise "Holes are not supported for now!"
+        all_loops = [self.outer_loop]
+        all_loops += self.inner_loops
+        all_points = self.outer_loop.points[:-1]
+        hole_start_indexes = []
+        for inner_loop in self.inner_loops:
+            hole_start_indexes.append(len(all_points))
+            all_points += inner_loop.points[:-1]
+
+        hole_indices = None if len(hole_start_indexes) == 0 else hole_start_indexes
+        flatten_coordinates = [num for sublist in all_points for num in sublist]
+        polygons = earcut(flatten_coordinates, holeIndices=hole_indices, dim=3)
+
+        n = 3
+        triangular_polygons = [polygons[i:i + n] for i in range(0, len(polygons), n)]
+
+        triangular_points = []
+        for triangular_polygon in triangular_polygons:
+            tp = triangular_polygon
+            triangular_points.append([all_points[tp[0]], all_points[tp[1]], all_points[tp[2]]])
+
+        return triangular_points
 
 
