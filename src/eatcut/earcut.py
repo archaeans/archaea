@@ -55,9 +55,9 @@ def earcut(data, hole_indices=None, dim=None):
                 max_z = z
 
         # minX, minY and size are later used to transform coords into integers for z-order calculation
-        size = max(max_x - min_x, max_y - min_y)
+        size = max(max_x - min_x, max_y - min_y, max_z - min_z)
 
-    earcutLinked(outer_node, triangles, dim, min_x, min_y, size)
+    earcut_linked(outer_node, triangles, dim, min_x, min_y, min_z, size)
 
     return triangles
 
@@ -110,13 +110,13 @@ def filter_points(start, end=None):
 
 
 # main ear slicing loop which triangulates a polygon (given as a linked _list)
-def earcutLinked(ear, triangles, dim, min_x, min_y, size, _pass=None):
+def earcut_linked(ear, triangles, dim, min_x, min_y, min_z, size, _pass=None):
     if not ear:
         return
 
     # interlink polygon nodes in z-order
     if not _pass and size:
-        index_curve(ear, min_x, min_y, size)
+        index_curve(ear, min_x, min_y, min_z, size)
 
     stop = ear
     prev = None
@@ -127,7 +127,7 @@ def earcutLinked(ear, triangles, dim, min_x, min_y, size, _pass=None):
         prev = ear.prev
         next = ear.next
 
-        if is_ear_hashed(ear, min_x, min_y, size) if size else is_ear(ear):
+        if is_ear_hashed(ear, min_x, min_y, min_z, size) if size else is_ear(ear):
             # cut off the triangle
             triangles.append(prev.i // dim)
             triangles.append(ear.i // dim)
@@ -135,7 +135,7 @@ def earcutLinked(ear, triangles, dim, min_x, min_y, size, _pass=None):
 
             remove_node(ear)
 
-            # skipping the next vertice leads to less sliver triangles
+            # skipping the next vertex leads to less sliver triangles
             ear = next.next
             stop = next.next
 
@@ -147,16 +147,16 @@ def earcutLinked(ear, triangles, dim, min_x, min_y, size, _pass=None):
         if ear == stop:
             # try filtering points and slicing again
             if not _pass:
-                earcutLinked(filter_points(ear), triangles, dim, min_x, min_y, size, 1)
+                earcut_linked(filter_points(ear), triangles, dim, min_x, min_y, min_z, size, 1)
 
                 # if this didn't work, try curing all small self-intersections locally
             elif _pass == 1:
                 ear = cure_local_intersections(ear, triangles, dim)
-                earcutLinked(ear, triangles, dim, min_x, min_y, size, 2)
+                earcut_linked(ear, triangles, dim, min_x, min_y, min_z, size, 2)
 
                 # as a last resort, try splitting the remaining polygon into two
             elif _pass == 2:
-                split_earcut(ear, triangles, dim, min_x, min_y, size)
+                split_earcut(ear, triangles, dim, min_x, min_y, min_z, size)
 
             break
 
@@ -182,7 +182,7 @@ def is_ear(ear):
     return True
 
 
-def is_ear_hashed(ear, min_x, min_y, size):
+def is_ear_hashed(ear, min_x, min_y, min_z, size):
     a = ear.prev
     b = ear
     c = ear.next
@@ -251,7 +251,7 @@ def cure_local_intersections(start, triangles, dim):
 
 
 # try splitting polygon into two and triangulate them independently
-def split_earcut(start, triangles, dim, min_x, min_y, size):
+def split_earcut(start, triangles, dim, min_x, min_y, min_z, size):
     # look for a valid diagonal that divides the polygon into two
     do = True
     a = start
@@ -270,8 +270,8 @@ def split_earcut(start, triangles, dim, min_x, min_y, size):
                 c = filter_points(c, c.next)
 
                 # run earcut on each half
-                earcutLinked(a, triangles, dim, min_x, min_y, size)
-                earcutLinked(c, triangles, dim, min_x, min_y, size)
+                earcut_linked(a, triangles, dim, min_x, min_y, min_z, size)
+                earcut_linked(c, triangles, dim, min_x, min_y, min_z, size)
                 return
 
             b = b.next
@@ -306,10 +306,6 @@ def eliminate_holes(data, hole_indices, outer_node, dim):
         outer_node = filter_points(outer_node, outer_node.next)
 
     return outer_node
-
-
-def compare_x(a, b):
-    return a.x - b.x
 
 
 # find a bridge between vertices that connects hole with an outer ring and link it
@@ -387,7 +383,7 @@ def find_hole_bridge(hole, outer_node):
 
 
 # interlink polygon nodes in z-order
-def index_curve(start, min_x, min_y, size):
+def index_curve(start, min_x, min_y, min_z, size):
     do = True
     p = start
 
