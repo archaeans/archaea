@@ -515,20 +515,26 @@ def get_leftmost(start):
 
 # check if a point lies within a convex triangle
 def point_in_triangle(ax, ay, az, bx, by, bz, cx, cy, cz, px, py, pz):
-    point_1 = Point3d(ax, ay, az)
-    point_2 = Point3d(bx, by, bz)
-    point_3 = Point3d(cx, cy, cz)
+    point_0 = Point3d(ax, ay, az)
+    point_1 = Point3d(bx, by, bz)
+    point_2 = Point3d(cx, cy, cz)
     point_to_check = Point3d(px, py, pz)
-    plane: Plane = Plane.from_3_point(point_1, point_2, point_3)
+    plane: Plane = Plane.from_3_point(point_0, point_1, point_2)
 
     is_point_on_plane = plane.is_on_plane(point_to_check)
 
-    is_point_on_triangle = (cx - px) * (ay - py) - (ax - px) * (cy - py) >= 0 and \
-                           (ax - px) * (by - py) - (bx - px) * (ay - py) >= 0 and \
-                           (bx - px) * (cy - py) - (cx - px) * (by - py) >= 0
+    if not is_point_on_plane:
+        return False
 
-    print("on point in triangle")
-    # TODO: Implement here plane and check point on plane first then solve point inside triangle or not
+    p_0_u, p_0_v = plane.plane_coordinates(point_0)
+    p_1_u, p_1_v = plane.plane_coordinates(point_1)
+    p_2_u, p_2_v = plane.plane_coordinates(point_2)
+    ptc_u, ptc_v = plane.plane_coordinates(point_to_check)
+
+    is_point_on_triangle = (p_2_u - ptc_u) * (p_0_v - ptc_v) - (p_0_u - ptc_u) * (p_2_v - ptc_v) >= 0 and \
+                           (p_0_u - ptc_u) * (p_1_v - ptc_v) - (p_1_u - ptc_u) * (p_0_v - ptc_v) >= 0 and \
+                           (p_1_u - ptc_u) * (p_2_v - ptc_v) - (p_2_u - ptc_u) * (p_1_v - ptc_v) >= 0
+
     return is_point_on_triangle
 
 
@@ -705,17 +711,10 @@ def deviation(data, hole_indices, dim, triangles):
 
 
 def signed_area(data, start, end, dim):
-    sum = 0
-    j = end - dim
     chopped_data = data[start:end]
     points = [chopped_data[i:i + dim] for i in range(0, len(chopped_data), dim)]
     sum_area = area3d(points)
     return sum_area
-
-    # for i in range(start, end, dim):
-    #     sum += (data[j] - data[i]) * (data[i + 1] + data[j + 1])
-    #     j = i
-    # return sum
 
 
 # turn a polygon in a multi-dimensional array form (e.g. as in GeoJSON) into a form Earcut accepts
