@@ -1,5 +1,7 @@
 import math
-
+from src.geometry.utils import area as area3d
+from src.geometry.plane import Plane
+from src.geometry.point3d import Point3d
 __all__ = ['earcut', 'deviation', 'flatten']
 
 
@@ -7,7 +9,7 @@ def earcut(data, holeIndices=None, dim=None):
     dim = dim or 2
 
     hasHoles = holeIndices and len(holeIndices)
-    outerLen =  holeIndices[0] * dim if hasHoles else len(data)
+    outerLen = holeIndices[0] * dim if hasHoles else len(data)
     outerNode = linkedList(data, 0, outerLen, dim, True)
     triangles = []
 
@@ -16,10 +18,13 @@ def earcut(data, holeIndices=None, dim=None):
 
     minX = None
     minY = None
+    minZ = None
     maxX = None
     maxY = None
+    maxZ = None
     x = None
     y = None
+    z = None
     size = None
 
     if hasHoles:
@@ -29,18 +34,24 @@ def earcut(data, holeIndices=None, dim=None):
     if (len(data) > 80 * dim):
         minX = maxX = data[0]
         minY = maxY = data[1]
+        minZ = maxZ = data[2]
 
         for i in range(dim, outerLen, dim):
             x = data[i]
             y = data[i + 1]
+            z = data[i + 2]
             if x < minX:
                 minX = x
             if y < minY:
                 minY = y
+            if z < minZ:
+                minZ = z
             if x > maxX:
                 maxX = x
             if y > maxY:
                 maxY = y
+            if z > maxZ:
+                maxZ = z
 
         # minX, minY and size are later used to transform coords into integers for z-order calculation
         size = max(maxX - minX, maxY - minY)
@@ -55,13 +66,13 @@ def linkedList(data, start, end, dim, clockwise):
     i = None
     last = None
 
-    if (clockwise == (signedArea(data, start, end, dim) > 0)):
+    if clockwise == (signedArea(data, start, end, dim) < 0):
         for i in range(start, end, dim):
-            last = insertNode(i, data[i], data[i + 1], last)
+            last = insertNode(i, last, data[i], data[i + 1], data[i + 2])
 
     else:
         for i in reversed(range(start, end, dim)):
-            last = insertNode(i, data[i], data[i + 1], last)
+            last = insertNode(i, last, data[i], data[i + 1], data[i + 2])
 
     if (last and equals(last, last.next)):
         removeNode(last)
@@ -154,13 +165,13 @@ def isEar(ear):
     c = ear.next
 
     if area(a, b, c) >= 0:
-        return False # reflex, can't be an ear
+        return False  # reflex, can't be an ear
 
     # now make sure we don't have other points inside the potential ear
     p = ear.next.next
 
     while p != ear.prev:
-        if pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) and area(p.prev, p, p.next) >= 0:
+        if point_in_triangle(a.x, a.y, a.z, b.x, b.y, b.z, c.x, c.y, c.z, p.x, p.y, p.z) and area(p.prev, p, p.next) >= 0:
                 return False
         p = p.next
 
@@ -172,7 +183,7 @@ def isEarHashed(ear, minX, minY, size):
     c = ear.next
 
     if area(a, b, c) >= 0:
-        return False # reflex, can't be an ear
+        return False  # reflex, can't be an ear
 
     # triangle bbox; min & max are calculated like this for speed
     minTX = (a.x if a.x < c.x else c.x) if a.x < b.x else (b.x if b.x < c.x else c.x)
@@ -188,7 +199,7 @@ def isEarHashed(ear, minX, minY, size):
     p = ear.nextZ
 
     while p and p.z <= maxZ:
-        if p != ear.prev and p != ear.next and pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) and area(p.prev, p, p.next) >= 0:
+        if p != ear.prev and p != ear.next and point_in_triangle(a.x, a.y, a.z, b.x, b.y, b.z, c.x, c.y, c.z, p.x, p.y, p.z) and area(p.prev, p, p.next) >= 0:
             return False
         p = p.nextZ
 
@@ -196,7 +207,7 @@ def isEarHashed(ear, minX, minY, size):
     p = ear.prevZ
 
     while p and p.z >= minZ:
-        if p != ear.prev and p != ear.next and pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) and area(p.prev, p, p.next) >= 0:
+        if p != ear.prev and p != ear.next and point_in_triangle(a.x, a.y, a.z, b.x, b.y, b.z, c.x, c.y, c.z, p.x, p.y, p.z) and area(p.prev, p, p.next) >= 0:
             return False
         p = p.prevZ
 
@@ -300,6 +311,7 @@ def findHoleBridge(hole, outerNode):
     p = outerNode
     hx = hole.x
     hy = hole.y
+    hz = hole.z
     qx = -math.inf
     m = None
 
@@ -336,6 +348,7 @@ def findHoleBridge(hole, outerNode):
     stop = m
     mx = m.x
     my = m.y
+    mz = m.z
     tanMin = math.inf
     tan = None
 
@@ -345,7 +358,7 @@ def findHoleBridge(hole, outerNode):
         hx_or_qx = hx if hy < my else qx
         qx_or_hx = qx if hy < my else hx
 
-        if hx >= p.x and p.x >= mx and pointInTriangle(hx_or_qx, hy, mx, my, qx_or_hx, hy, p.x, p.y):
+        if hx >= p.x and p.x >= mx and point_in_triangle(hx_or_qx, hy, hz, mx, my, mz, qx_or_hx, hy, hz, p.x, p.y, p.z):
 
             tan = abs(hy - p.y) / (hx - p.x) # tangential
 
@@ -372,8 +385,8 @@ def indexCurve(start, minX, minY, size):
         p.nextZ = p.next
         p = p.next
 
-    p.prevZ.nextZ = None
-    p.prevZ = None
+    # p.prevZ.nextZ = None
+    # p.prevZ = None
 
     sortLinked(p)
 
@@ -481,24 +494,41 @@ def getLeftmost(start):
 
     return leftmost
 
+
 # check if a point lies within a convex triangle
-def pointInTriangle(ax, ay, bx, by, cx, cy, px, py):
-    return (cx - px) * (ay - py) - (ax - px) * (cy - py) >= 0 and \
+def point_in_triangle(ax, ay, az, bx, by, bz, cx, cy, cz, px, py, pz):
+    point_1 = Point3d(ax, ay, az)
+    point_2 = Point3d(bx, by, bz)
+    point_3 = Point3d(cx, cy, cz)
+    point_to_check = Point3d(px, py, pz)
+    plane: Plane = Plane.from_3_point(point_1, point_2, point_3)
+
+    is_point_on_plane = plane.is_on_plane(point_to_check)
+
+    is_point_on_triangle = (cx - px) * (ay - py) - (ax - px) * (cy - py) >= 0 and \
         (ax - px) * (by - py) - (bx - px) * (ay - py) >= 0 and \
         (bx - px) * (cy - py) - (cx - px) * (by - py) >= 0
+
+    print("on point in triangle")
+    # TODO: Implement here plane and check point on plane first then solve point inside triangle or not
+    return is_point_on_triangle
 
 # check if a diagonal between two polygon nodes is valid (lies in polygon interior)
 def isValidDiagonal(a, b):
     return a.next.i != b.i and a.prev.i != b.i and not intersectsPolygon(a, b) and \
         locallyInside(a, b) and locallyInside(b, a) and middleInside(a, b)
 
+
 # signed area of a triangle
 def area(p, q, r):
-    return (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y)
+    polygon = [[p.x, p.y, p.z], [q.x, q.y, q.z], [r.x, r.y, r.z]]
+    return area3d(polygon)
+    # return (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y)
+
 
 # check if two points are equal
 def equals(p1, p2):
-    return p1.x == p2.x and p1.y == p2.y
+    return p1.x == p2.x and p1.y == p2.y and p1.z == p2.z
 
 
 # check if two segments intersect
@@ -508,6 +538,7 @@ def intersects(p1, q1, p2, q2):
 
     return area(p1, q1, p2) > 0 != area(p1, q1, q2) > 0 and \
         area(p2, q2, p1) > 0 != area(p2, q2, q1) > 0
+
 
 # check if a polygon diagonal intersects any polygon segments
 def intersectsPolygon(a, b):
@@ -523,12 +554,14 @@ def intersectsPolygon(a, b):
 
     return False
 
+
 # check if a polygon diagonal is locally inside the polygon
 def locallyInside(a, b):
     if area(a.prev, a, a.next) < 0:
         return  area(a, b, a.next) >= 0 and area(a, a.prev, b) >= 0
     else:
         return area(a, b, a.prev) < 0 or area(a, a.next, b) < 0
+
 
 # check if the middle point of a polygon diagonal is inside the polygon
 def middleInside(a, b):
@@ -547,11 +580,12 @@ def middleInside(a, b):
 
     return inside
 
+
 # link two polygon vertices with a bridge; if the vertices belong to the same ring, it splits polygon into two;
 # if one belongs to the outer ring and another to a hole, it merges it into a single ring
 def splitPolygon(a, b):
-    a2 = Node(a.i, a.x, a.y)
-    b2 = Node(b.i, b.x, b.y)
+    a2 = Node(a.i, a.x, a.y, a.z)
+    b2 = Node(b.i, b.x, b.y, b.z)
     an = a.next
     bp = b.prev
 
@@ -571,8 +605,8 @@ def splitPolygon(a, b):
 
 
 # create a node and optionally link it with previous one (in a circular doubly linked _list)
-def insertNode(i, x, y, last):
-    p = Node(i, x, y)
+def insertNode(i, last, x, y, z=None):
+    p = Node(i, x, y, z)
 
     if not last:
         p.prev = p
@@ -586,18 +620,19 @@ def insertNode(i, x, y, last):
 
     return p
 
+
 def removeNode(p):
     p.next.prev = p.prev
     p.prev.next = p.next
 
-    if p.prevZ:
-        p.prevZ.nextZ = p.nextZ
+    # if p.prevZ:
+    #     p.prevZ.nextZ = p.nextZ
+    # if p.nextZ:
+    #     p.nextZ.prevZ = p.prevZ
 
-    if p.nextZ:
-        p.nextZ.prevZ = p.prevZ
 
 class Node(object):
-    def __init__(self, i, x, y):
+    def __init__(self, i, x, y, z=None):
     # vertice index in coordinates array
         self.i = i
 
@@ -605,17 +640,15 @@ class Node(object):
 
         self.x = x
         self.y = y
+        self.z = z
 
         # previous and next vertice nodes in a polygon ring
         self.prev = None
         self.next = None
 
-        # z-order curve value
-        self.z = None
-
         # previous and next nodes in z-order
-        self.prevZ = None
-        self.nextZ = None
+        # self.prevZ = None
+        # self.nextZ = None
 
         # indicates whether this is a steiner point
         self.steiner = False
@@ -655,12 +688,15 @@ def deviation(data, holeIndices, dim, triangles):
 def signedArea(data, start, end, dim):
     sum = 0
     j = end - dim
+    chopped_data = data[start:end]
+    points = [chopped_data[i:i + dim] for i in range(0, len(chopped_data), dim)]
+    sum_area = area3d(points)
+    return sum_area
 
-    for i in range(start, end, dim):
-        sum += (data[j] - data[i]) * (data[i + 1] + data[j + 1])
-        j = i
-
-    return sum
+    # for i in range(start, end, dim):
+    #     sum += (data[j] - data[i]) * (data[i + 1] + data[j + 1])
+    #     j = i
+    # return sum
 
 
 # turn a polygon in a multi-dimensional array form (e.g. as in GeoJSON) into a form Earcut accepts
@@ -683,6 +719,7 @@ def flatten(data):
             result['holes'].append(holeIndex)
 
     return result
+
 
 def unflatten(data):
     result = []

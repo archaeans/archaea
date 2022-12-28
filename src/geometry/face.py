@@ -28,6 +28,10 @@ class Face:
     def plane(self):
         return self.outer_loop.plane()
 
+    @functools.cached_property
+    def has_hole(self):
+        return self.inner_loops != 0
+
     def move(self, vector):
         moved_outer_loop = self.outer_loop.move(vector)
         moved_inner_loops = []
@@ -58,7 +62,7 @@ class Face:
 
         hole_indices = None if len(hole_start_indexes) == 0 else hole_start_indexes
         flatten_coordinates = [num for sublist in all_points for num in sublist]
-        polygons = earcut(flatten_coordinates, holeIndices=hole_indices, dim=3)
+        polygons = earcut(flatten_coordinates, hole_indices=hole_indices, dim=3)
 
         n = 3
         triangular_polygons = [polygons[i:i + n] for i in range(0, len(polygons), n)]
@@ -69,5 +73,3 @@ class Face:
             triangular_points.append([all_points[tp[0]], all_points[tp[1]], all_points[tp[2]]])
 
         return triangular_points
-
-

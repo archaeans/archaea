@@ -49,13 +49,11 @@ class Loop(Polyline):
         return Loop(moved_points)
 
     def extrude(self, value):
-        faces = [self.to_face()]
+        faces = []
         move_vector = Vector3d(*self.normal.scale(value))
         for line in self.segments:
             border = line.extrude(move_vector)
             faces.append(border)
-        cap = self.move(move_vector)
-        faces.append(cap.to_face())
         return faces
 
     @staticmethod

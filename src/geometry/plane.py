@@ -14,6 +14,13 @@ class Plane:
         self.v = v
         self.origin = origin
 
+    @classmethod
+    def from_3_point(cls, origin_point: Point3d, point_2: Point3d, point_3: Point3d):
+        u_direction = origin_point.vector_to(point_2).normalize()
+        normal = u_direction.cross_product(origin_point.vector_to(point_3))
+        v_direction = u_direction.cross_product(normal.normalize())
+        return cls(origin_point, u_direction, v_direction)
+
     def point_at(self, u, v):
         return self.origin.move(self.u.scale(u) + self.v.scale(v))
 

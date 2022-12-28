@@ -88,3 +88,34 @@ class TestMesh(unittest.TestCase):
         # Act
         mesh.add_from_face(Setup.face_rectangle_with_holes)
         mesh.to_stl("", "test_face_with_hole")
+
+    def test_extruded_face_with_holes(self):
+        # Arrange
+        mesh = Mesh()
+        extruded_faces = Setup.face_rectangle_with_holes.extrude(3)
+
+        # Act
+        mesh.add_from_faces(extruded_faces)
+        mesh.to_stl("", "test_extruded_face_with_hole")
+
+    def test_vertical_face(self):
+        # Arrange
+        mesh = Mesh()
+        p0 = Point3d(0, 0, 0)
+        p1 = Point3d(10, 0, 0)
+        p2 = Point3d(10, 0, 10)
+        p3 = Point3d(0, 0, 10)
+        vertical_face = Face(Loop([p0, p1, p2, p3]))
+
+        # Act
+        mesh.add_from_face(vertical_face)
+        mesh.to_stl("", "test_vertical_face")
+
+    def test_horizontal_face(self):
+        # Arrange
+        mesh = Mesh()
+
+        # Act
+        mesh.add_from_face(Setup.face_rectangle)
+        mesh.to_stl("", "test_horizontal_face")
+
