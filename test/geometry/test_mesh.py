@@ -1,6 +1,5 @@
 import unittest
 from src.geometry.point3d import Point3d
-from src.geometry.vector3d import Vector3d
 from src.geometry.loop import Loop
 from src.geometry.face import Face
 from src.geometry.mesh import Mesh
@@ -119,3 +118,6 @@ class TestMesh(unittest.TestCase):
         mesh.add_from_face(Setup.face_rectangle)
         mesh.to_stl("", "test_horizontal_face")
 
+
+if __name__ == '__main__':
+    unittest.main()

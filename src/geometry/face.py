@@ -1,7 +1,7 @@
 import functools
 from src.geometry.vector3d import Vector3d
 from src.geometry.loop import Loop
-from src.eatcut.earcut import earcut
+from src.earcut.earcut import earcut
 
 
 class Face:

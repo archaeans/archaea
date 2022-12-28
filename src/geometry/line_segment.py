@@ -83,8 +83,10 @@ class LineSegment:
         a = p_segment_vector.dot(qp_distance_vector) / p_length**2
         b = p_segment_vector.dot(q_segment_vector) / p_length**2
         c = p_segment_vector.scale(b) - q_segment_vector
-
-        t1 = c.dot(q1 - p1.scale(1 - a) - p2.scale(a)) / c.length**2
+        c_length = c.length
+        if c_length == 0:
+            c_length = 1
+        t1 = c.dot(q1 - p1.scale(1 - a) - p2.scale(a)) / c_length**2
         t0 = a + (t1 * b)
         is_intersects = (0 <= t0 <= 1) and (0 <= t1 <= 1)
         return is_intersects

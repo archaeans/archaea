@@ -88,3 +88,7 @@ class TestLineSegment(unittest.TestCase):
         # Assert
         self.assertFalse(is_intersects)
         self.assertEqual(distance, 2)
+
+
+if __name__ == '__main__':
+    unittest.main()

@@ -38,3 +38,7 @@ class TestVector3d(unittest.TestCase):
     def test_azimuth_angle(self):
         # Assert
         self.assertEqual(Setup.vector3d_3.azimuth_angle(), 45)
+
+
+if __name__ == '__main__':
+    unittest.main()

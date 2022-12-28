@@ -2,6 +2,7 @@ import math
 from src.geometry.utils import area as area3d
 from src.geometry.plane import Plane
 from src.geometry.point3d import Point3d
+from src.geometry.loop import Loop
 
 __all__ = ['earcut', 'deviation', 'flatten']
 
@@ -515,23 +516,9 @@ def point_in_triangle(ax, ay, az, bx, by, bz, cx, cy, cz, px, py, pz):
     point_1 = Point3d(bx, by, bz)
     point_2 = Point3d(cx, cy, cz)
     point_to_check = Point3d(px, py, pz)
-    plane: Plane = Plane.from_3_point(point_0, point_1, point_2)
+    loop = Loop([point_0, point_1, point_2])
 
-    is_point_on_plane = plane.is_on_plane(point_to_check)
-
-    if not is_point_on_plane:
-        return False
-
-    p_0_u, p_0_v = plane.plane_coordinates(point_0)
-    p_1_u, p_1_v = plane.plane_coordinates(point_1)
-    p_2_u, p_2_v = plane.plane_coordinates(point_2)
-    ptc_u, ptc_v = plane.plane_coordinates(point_to_check)
-
-    is_point_on_triangle = (p_2_u - ptc_u) * (p_0_v - ptc_v) - (p_0_u - ptc_u) * (p_2_v - ptc_v) >= 0 and \
-                           (p_0_u - ptc_u) * (p_1_v - ptc_v) - (p_1_u - ptc_u) * (p_0_v - ptc_v) >= 0 and \
-                           (p_1_u - ptc_u) * (p_2_v - ptc_v) - (p_2_u - ptc_u) * (p_1_v - ptc_v) >= 0
-
-    return is_point_on_triangle
+    return loop.is_point_in_loop(point_2)
 
 
 # check if a diagonal between two polygon nodes is valid (lies in polygon interior)
