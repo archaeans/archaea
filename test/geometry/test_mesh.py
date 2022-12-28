@@ -51,3 +51,12 @@ class TestMesh(unittest.TestCase):
 
         # Act
         mesh.to_stl("", "test")
+
+    def test_extruded_faces_to_stl(self):
+        # Arrange
+        mesh = Mesh()
+        extruded_faces = Setup.face_rectangle.extrude(3)
+
+        # Act
+        mesh.add_from_faces(extruded_faces)
+        mesh.to_stl("", "test_box")

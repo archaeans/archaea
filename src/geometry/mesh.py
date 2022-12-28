@@ -1,4 +1,5 @@
 from src.geometry.point3d import Point3d
+from src.geometry.face import Face
 from src.writer.to_stl import to_stl
 import numpy as np
 
@@ -11,8 +12,14 @@ class Mesh:
         self.polygons = []
         self.vertices = []
 
-    def add_from_face(self, face):
-        raise 'Not implemented'
+    def add_from_faces(self, faces: "list[Face]"):
+        for face in faces:
+            self.add_from_face(face)
+
+    def add_from_face(self, face: Face):
+        face_vertices = face.mesh_polygon_vertices()
+        for vertices in face_vertices:
+            self.add_polygon(vertices)
 
     def add_polygon(self, vertices: "list[Point3d]"):
         polygon_indexes = []

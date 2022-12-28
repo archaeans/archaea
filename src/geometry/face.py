@@ -36,11 +36,23 @@ class Face:
 
     def extrude(self, value):
         all_faces = [self]
-        move_vector = Vector3d(self.normal.scale(value))
-        all_loops = self.inner_loops.append(self.outer_loop)
+        all_loops = [self.outer_loop]
+        all_loops += self.inner_loops
         for loop in all_loops:
-            loop_faces = loop.extrude(move_vector)
+            loop_faces = loop.extrude(value)
             all_faces += loop_faces
+        move_vector = Vector3d(*self.normal.scale(value))
         cap = self.move(move_vector)
         all_faces.append(cap)
+        return all_faces
+
+    def mesh_polygon_vertices(self):
+        # TODO: This method should be improved with triangulation algorithms that considers also holes.
+        if len(self.inner_loops) == 0:
+            # FIXME: Currently support only faces have 4 vertices
+            points: "list[Point3d]" = self.outer_loop.points
+            return [[points[0], points[1], points[2]], [points[0], points[2], points[3]]]
+        else:
+            raise "Holes are not supported for now!"
+
 
