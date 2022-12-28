@@ -7,6 +7,13 @@ from src.geometry.loop import Loop
 __all__ = ['earcut', 'deviation', 'flatten']
 
 
+# TODO: for 29th December
+#  Do not push earcut calculations for x,y,z.
+#  Instead plane transformations can be done,
+#  1- Convert face vertices to it's u-v coordinates of it's plane
+#  2- Run earcut with u-v coordinates as 2-dimensional, and get triangles,
+#  3- Revert back u-v coordinates to x,y,z and add to mesh
+
 def earcut(data, hole_indices=None, dim=None):
     dim = dim or 2
 
