@@ -50,9 +50,9 @@ def area(poly):
         else:
             vi2 = poly[i + 1]
         prod = cross(vi1, vi2)
-        total[0] += abs(prod[0])
-        total[1] += abs(prod[1])
-        total[2] += abs(prod[2])
+        total[0] += prod[0]
+        total[1] += prod[1]
+        total[2] += prod[2]
     normal = unit_normal(poly[0], poly[1], poly[2])
     result = dot(total, normal)
     return round(result / 2, 5)

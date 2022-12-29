@@ -1,3 +1,4 @@
+import functools
 from src.geometry.vector3d import Vector3d
 from src.geometry.point3d import Point3d
 
@@ -13,6 +14,10 @@ class Plane:
         self.u = u
         self.v = v
         self.origin = origin
+
+    @functools.cached_property
+    def normal(self):
+        return self.u.cross_product(self.v).normalize()
 
     @classmethod
     def from_3_point(cls, origin_point: Point3d, point_2: Point3d, point_3: Point3d):

@@ -167,6 +167,18 @@ class TestMesh(unittest.TestCase):
         mesh.add_from_faces(extruded_faces)
         mesh.to_stl("", "test_counter_clockwise_extrude_face")
 
+    def test_offset_and_move_face_with_hole(self):
+        # Arrange
+        mesh = Mesh()
+        offset_value = 0.5
+        wall_thickness = -0.2
+
+        # Act
+        offset_face = Setup.face_rectangle_with_holes.offset(offset_value)
+        moved_face = offset_face.move(offset_face.plane.normal.scale(wall_thickness))
+        mesh.add_from_faces([Setup.face_rectangle_with_holes, moved_face])
+        mesh.to_stl("", "test_offset_and_move_face_with_hole")
+
 
 if __name__ == '__main__':
     unittest.main()

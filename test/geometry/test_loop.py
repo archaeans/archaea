@@ -2,6 +2,7 @@ import unittest
 from src.geometry.point3d import Point3d
 from src.geometry.point2d import Point2d
 from src.geometry.vector3d import Vector3d
+from src.geometry.orientation import Orientation
 from src.geometry.loop import Loop
 
 
@@ -10,11 +11,27 @@ class Setup(unittest.TestLoader):
     p2 = Point3d(10, 0, 0)
     p3 = Point3d(10, 10, 0)
     p4 = Point3d(0, 10, 0)
+    # counter-clockwise
     loop_triangle = Loop([p1, p2, p3])
     loop_rectangle = Loop([p1, p2, p3, p4])
+    # clockwise
+    clockwise_loop_triangle = Loop([p1, p3, p2])
+    clockwise_loop_rectangle = Loop([p1, p4, p3, p2])
 
 
 class TestLoop(unittest.TestCase):
+    def test_area(self):
+        # Assert
+        self.assertEqual(Setup.loop_triangle.area, 50)
+        self.assertEqual(Setup.clockwise_loop_triangle.area, -50)
+        self.assertEqual(Setup.loop_rectangle.area, 100)
+        self.assertEqual(Setup.clockwise_loop_rectangle.area, -100)
+
+    def test_orientation(self):
+        # Assert
+        self.assertEqual(Setup.loop_rectangle.orientation, Orientation.COUNTER_CLOCKWISE)
+        self.assertEqual(Setup.clockwise_loop_rectangle.orientation, Orientation.CLOCKWISE)
+
     def test_close_loop(self):
         # Assert
         self.assertEqual(len(Setup.loop_triangle.points), 4)
@@ -83,6 +100,13 @@ class TestLoop(unittest.TestCase):
         self.assertEqual(Setup.p2, Setup.loop_rectangle.point_from_uv(uv_points[1]))
         self.assertEqual(Setup.p3, Setup.loop_rectangle.point_from_uv(uv_points[2]))
         self.assertEqual(Setup.p4, Setup.loop_rectangle.point_from_uv(uv_points[3]))
+
+    def test_offset(self):
+        # Act
+        offset_loop = Setup.loop_rectangle.offset(2)
+
+        # Assert
+        self.assertEqual(offset_loop.area, 36)
 
 
 if __name__ == '__main__':

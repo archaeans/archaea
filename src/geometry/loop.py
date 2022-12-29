@@ -6,6 +6,7 @@ from src.geometry.line_segment import LineSegment
 from src.geometry.polyline import Polyline
 from src.geometry.plane import Plane
 from src.geometry.utils import area
+from src.geometry.orientation import Orientation
 
 
 class Loop(Polyline):
@@ -27,12 +28,21 @@ class Loop(Polyline):
 
     @functools.cached_property
     def area(self):
-        poly = [point.to_a() for point in self.points]
+        poly = [point.to_a() for point in self.points[:-1]]
         return area(poly)
 
     @functools.cached_property
     def segment_count(self):
         return len(self.segments)
+
+    @functools.cached_property
+    def orientation(self) -> Orientation:
+        if self.area == 0:
+            return Orientation.UNDEFINED
+        elif self.area > 0:
+            return Orientation.COUNTER_CLOCKWISE
+        else:
+            return Orientation.CLOCKWISE
 
     def uv_points(self, plane=None) -> "list[Point2d]":
         plane = plane or self.plane()
@@ -69,6 +79,32 @@ class Loop(Polyline):
             border = line.extrude(move_vector)
             faces.append(border)
         return faces
+
+    def offset(self, value):
+        if self.orientation == Orientation.UNDEFINED:
+            return self
+
+        loop_plane = self.plane()
+        sc = self.segment_count
+        consecutive_segments = []
+        for index, segment in enumerate(self.segments):
+            consecutive_segments.append([segment, self.segments[(index + 1) % sc]])
+
+        offset_points = []
+        for pair in consecutive_segments:
+            segment: LineSegment = pair[0]
+            next_segment: LineSegment = pair[1]
+
+            segment_normal = segment.normal_on_plane(loop_plane)
+            next_normal = next_segment.normal_on_plane(loop_plane)
+
+            moved_segment = segment.move(segment_normal.scale(value))
+            moved_next_segment = next_segment.move(next_normal.scale(value))
+
+            intersected_point = LineSegment.line_intersection(moved_segment, moved_next_segment)
+            offset_points.append(intersected_point)
+
+        return Loop(offset_points)
 
     def is_point_in_loop(self, point: Point3d) -> bool:
         plane = self.plane()

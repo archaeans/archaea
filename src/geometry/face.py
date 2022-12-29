@@ -59,6 +59,10 @@ class Face:
         reversed_inner_loops = [loop.reverse() for loop in self.inner_loops]
         return Face(reversed_outer_loop, reversed_inner_loops)
 
+    def offset(self, value):
+        offset_outer_loop = self.outer_loop.offset(value)
+        return Face(offset_outer_loop, self.inner_loops)
+
     def mesh_polygon_vertices(self):
         all_loops = [self.outer_loop]
         all_loops += self.inner_loops
