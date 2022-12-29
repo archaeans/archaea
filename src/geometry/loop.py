@@ -1,5 +1,6 @@
 import functools
 from src.geometry.point3d import Point3d
+from src.geometry.point2d import Point2d
 from src.geometry.vector3d import Vector3d
 from src.geometry.line_segment import LineSegment
 from src.geometry.polyline import Polyline
@@ -33,6 +34,19 @@ class Loop(Polyline):
     def segment_count(self):
         return len(self.segments)
 
+    def uv_points(self, plane=None) -> "list[Point2d]":
+        plane = plane or self.plane()
+        plane_coordinates = [plane.plane_coordinates(point) for point in self.points[:-1]]
+        return [Point2d(pc[0], pc[1]) for pc in plane_coordinates]
+
+    def reverse(self):
+        points: "list[Point3d]" = list(reversed(self.points))
+        return Loop(points)
+
+    def point_from_uv(self, uv_point: Point2d) -> Point3d:
+        plane = self.plane()
+        return plane.point_at(uv_point.x, uv_point.y)
+
     def plane(self):
         return Plane.from_3_point(self.points[0], self.points[1], self.points[2])
 
@@ -46,10 +60,12 @@ class Loop(Polyline):
             moved_points.append(point.move(vector))
         return Loop(moved_points)
 
-    def extrude(self, value):
+    def extrude(self, value, is_hole_loop=False):
         faces = []
-        move_vector = Vector3d(*self.normal.scale(value))
-        for line in self.segments:
+        segments = self.segments if is_hole_loop else self.reverse().segments
+        extrusion_value = value  if is_hole_loop else value
+        move_vector = Vector3d(*self.normal.scale(extrusion_value))
+        for line in segments:
             border = line.extrude(move_vector)
             faces.append(border)
         return faces

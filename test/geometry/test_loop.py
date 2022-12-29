@@ -1,5 +1,6 @@
 import unittest
 from src.geometry.point3d import Point3d
+from src.geometry.point2d import Point2d
 from src.geometry.vector3d import Vector3d
 from src.geometry.loop import Loop
 
@@ -64,6 +65,24 @@ class TestLoop(unittest.TestCase):
         self.assertFalse(point_out_should_false)
         self.assertTrue(point_on_should_true)
         self.assertTrue(point_in_should_true)
+
+    def test_uv_points(self):
+        # Act
+        uv_points = Setup.loop_rectangle.uv_points()
+
+        # Assert
+        self.assertEqual(len(Setup.loop_rectangle.points), 5)
+        self.assertEqual(len(uv_points), 4)
+
+        self.assertEqual(uv_points[0], Point2d(0, 0))
+        self.assertEqual(uv_points[1], Point2d(10, 0))
+        self.assertEqual(uv_points[2], Point2d(10, -10))
+        self.assertEqual(uv_points[3], Point2d(0, -10))
+
+        self.assertEqual(Setup.p1, Setup.loop_rectangle.point_from_uv(uv_points[0]))
+        self.assertEqual(Setup.p2, Setup.loop_rectangle.point_from_uv(uv_points[1]))
+        self.assertEqual(Setup.p3, Setup.loop_rectangle.point_from_uv(uv_points[2]))
+        self.assertEqual(Setup.p4, Setup.loop_rectangle.point_from_uv(uv_points[3]))
 
 
 if __name__ == '__main__':

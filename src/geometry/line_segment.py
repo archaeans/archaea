@@ -29,6 +29,9 @@ class LineSegment:
     def vector(self):
         return self.start.vector_to(self.end)
 
+    def reverse(self):
+        return LineSegment(self.end, self.start)
+
     def point_at(self, t: float) -> Point3d:
         return self.start + self.vector.scale(t)
 

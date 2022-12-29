@@ -12,6 +12,11 @@ class Setup(unittest.TestLoader):
     p2 = Point3d(10, 10, 0)
     p3 = Point3d(0, 10, 0)
 
+    clockwise_loop = Loop([p0, p3, p2, p1])
+    clockwise_face = Face(clockwise_loop)
+    counter_clockwise_loop = Loop([p0, p1, p2, p3])
+    counter_clockwise_face = Face(counter_clockwise_loop)
+
     # inner loop - 1
     p4 = Point3d(2, 2, 0)
     p5 = Point3d(4, 2, 0)
@@ -88,14 +93,48 @@ class TestMesh(unittest.TestCase):
         mesh.add_from_face(Setup.face_rectangle_with_holes)
         mesh.to_stl("", "test_face_with_hole")
 
-    def test_extruded_face_with_holes(self):
+    def test_horizontal_extruded_face_with_holes(self):
         # Arrange
         mesh = Mesh()
         extruded_faces = Setup.face_rectangle_with_holes.extrude(3)
 
         # Act
         mesh.add_from_faces(extruded_faces)
-        mesh.to_stl("", "test_extruded_face_with_hole")
+        mesh.to_stl("", "test_horizontal_extruded_face_with_holes")
+
+    def test_vertical_extruded_face_with_holes(self):
+        # Arrange
+        p0 = Point3d(0, 0, 0)
+        p1 = Point3d(10, 0, 0)
+        p2 = Point3d(10, 0, 10)
+        p3 = Point3d(0, 0, 10)
+
+        # inner loop - 1
+        p4 = Point3d(2, 0, 2)
+        p5 = Point3d(4, 0, 2)
+        p6 = Point3d(4, 0, 4)
+        p7 = Point3d(2, 0, 4)
+
+        # inner loop - 2
+        p8 = Point3d(5, 0, 0.2)
+        p9 = Point3d(7, 0, 0.2)
+        p10 = Point3d(7, 0, 7)
+        p11 = Point3d(5, 0, 7)
+
+        # loops
+        outer_loop = Loop([p0, p1, p2, p3])
+        inner_loop_1 = Loop([p4, p5, p6, p7])
+        inner_loop_2 = Loop([p8, p9, p10, p11])
+
+        # faces
+        face_vertical_rectangle_with_holes = Face(outer_loop, [inner_loop_1, inner_loop_2])
+
+        mesh = Mesh()
+        extruded_faces = face_vertical_rectangle_with_holes.extrude(0.2)
+
+        # Act
+        mesh.add_from_faces(extruded_faces)
+        mesh.to_stl("", "test_vertical_extruded_face_with_holes")
 
     def test_vertical_face(self):
         # Arrange
@@ -110,13 +149,23 @@ class TestMesh(unittest.TestCase):
         mesh.add_from_face(vertical_face)
         mesh.to_stl("", "test_vertical_face")
 
-    def test_horizontal_face(self):
+    def test_clockwise_extrude_face(self):
         # Arrange
         mesh = Mesh()
+        extruded_faces = Setup.clockwise_face.extrude(3)
 
         # Act
-        mesh.add_from_face(Setup.face_rectangle)
-        mesh.to_stl("", "test_horizontal_face")
+        mesh.add_from_faces(extruded_faces)
+        mesh.to_stl("", "test_clockwise_extrude_face")
+
+    def test_counter_clockwise_extrude_face(self):
+        # Arrange
+        mesh = Mesh()
+        extruded_faces = Setup.counter_clockwise_face.extrude(3)
+
+        # Act
+        mesh.add_from_faces(extruded_faces)
+        mesh.to_stl("", "test_counter_clockwise_extrude_face")
 
 
 if __name__ == '__main__':
