@@ -73,8 +73,7 @@ class Loop(Polyline):
     def extrude(self, value, is_hole_loop=False):
         faces = []
         segments = self.segments if is_hole_loop else self.reverse().segments
-        extrusion_value = value  if is_hole_loop else value
-        move_vector = Vector3d(*self.normal.scale(extrusion_value))
+        move_vector = Vector3d(*self.normal.scale(value))
         for line in segments:
             border = line.extrude(move_vector)
             faces.append(border)

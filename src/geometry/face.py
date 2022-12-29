@@ -37,7 +37,7 @@ class Face:
         moved_inner_loops = []
         for loop in self.inner_loops:
             moved_inner_loops.append(loop.move(vector))
-        return Face(moved_outer_loop, moved_inner_loops)
+        return self.__class__(moved_outer_loop, moved_inner_loops)
 
     def extrude(self, value):
         if value == 0:
@@ -57,11 +57,11 @@ class Face:
     def reverse(self):
         reversed_outer_loop = self.outer_loop.reverse()
         reversed_inner_loops = [loop.reverse() for loop in self.inner_loops]
-        return Face(reversed_outer_loop, reversed_inner_loops)
+        return self.__class__(reversed_outer_loop, reversed_inner_loops)
 
     def offset(self, value):
         offset_outer_loop = self.outer_loop.offset(value)
-        return Face(offset_outer_loop, self.inner_loops)
+        return self.__class__(offset_outer_loop, self.inner_loops)
 
     def mesh_polygon_vertices(self):
         all_loops = [self.outer_loop]
