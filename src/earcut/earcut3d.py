@@ -1,7 +1,18 @@
 import math
+from src.geometry.utils import area as area3d
+from src.geometry.plane import Plane
+from src.geometry.point3d import Point3d
+from src.geometry.loop import Loop
 
 __all__ = ['earcut', 'deviation', 'flatten']
 
+
+# TODO: for 29th December
+#  Do not push earcut calculations for x,y,z.
+#  Instead plane transformations can be done,
+#  1- Convert face vertices to it's u-v coordinates of it's plane
+#  2- Run earcut with u-v coordinates as 2-dimensional, and get triangles,
+#  3- Revert back u-v coordinates to x,y,z and add to mesh
 
 def earcut(data, hole_indices=None, dim=None):
     dim = dim or 2
@@ -16,10 +27,13 @@ def earcut(data, hole_indices=None, dim=None):
 
     min_x = None
     min_y = None
+    min_z = None
     max_x = None
     max_y = None
+    max_z = None
     x = None
     y = None
+    z = None
     size = None
 
     if has_holes:
@@ -29,23 +43,29 @@ def earcut(data, hole_indices=None, dim=None):
     if len(data) > 80 * dim:
         min_x = max_x = data[0]
         min_y = max_y = data[1]
+        min_z = max_z = data[2]
 
         for i in range(dim, outer_len, dim):
             x = data[i]
             y = data[i + 1]
+            z = data[i + 2]
             if x < min_x:
                 min_x = x
             if y < min_y:
                 min_y = y
+            if z < min_z:
+                min_z = z
             if x > max_x:
                 max_x = x
             if y > max_y:
                 max_y = y
+            if z > max_z:
+                max_z = z
 
         # minX, minY and size are later used to transform coords into integers for z-order calculation
-        size = max(max_x - min_x, max_y - min_y)
+        size = max(max_x - min_x, max_y - min_y, max_z - min_z)
 
-    earcut_linked(outer_node, triangles, dim, min_x, min_y, size)
+    earcut_linked(outer_node, triangles, dim, min_x, min_y, min_z, size)
 
     return triangles
 
@@ -55,13 +75,13 @@ def linked_list(data, start, end, dim, clockwise):
     i = None
     last = None
 
-    if clockwise == (signed_area(data, start, end, dim) > 0):
+    if clockwise == (signed_area(data, start, end, dim) < 0):
         for i in range(start, end, dim):
-            last = insert_node(i, data[i], data[i + 1], last)
+            last = insert_node(i, last, data[i], data[i + 1], data[i + 2])
 
     else:
         for i in reversed(range(start, end, dim)):
-            last = insert_node(i, data[i], data[i + 1], last)
+            last = insert_node(i, last, data[i], data[i + 1], data[i + 2])
 
     if last and equals(last, last.next):
         remove_node(last)
@@ -98,13 +118,13 @@ def filter_points(start, end=None):
 
 
 # main ear slicing loop which triangulates a polygon (given as a linked _list)
-def earcut_linked(ear, triangles, dim, minX, minY, size, _pass=None):
+def earcut_linked(ear, triangles, dim, min_x, min_y, min_z, size, _pass=None):
     if not ear:
         return
 
     # interlink polygon nodes in z-order
     if not _pass and size:
-        index_curve(ear, minX, minY, size)
+        index_curve(ear, min_x, min_y, min_z, size)
 
     stop = ear
     prev = None
@@ -115,7 +135,7 @@ def earcut_linked(ear, triangles, dim, minX, minY, size, _pass=None):
         prev = ear.prev
         next = ear.next
 
-        if is_ear_hashed(ear, minX, minY, size) if size else is_ear(ear):
+        if is_ear_hashed(ear, min_x, min_y, min_z, size) if size else is_ear(ear):
             # cut off the triangle
             triangles.append(prev.i // dim)
             triangles.append(ear.i // dim)
@@ -135,16 +155,16 @@ def earcut_linked(ear, triangles, dim, minX, minY, size, _pass=None):
         if ear == stop:
             # try filtering points and slicing again
             if not _pass:
-                earcut_linked(filter_points(ear), triangles, dim, minX, minY, size, 1)
+                earcut_linked(filter_points(ear), triangles, dim, min_x, min_y, min_z, size, 1)
 
                 # if this didn't work, try curing all small self-intersections locally
             elif _pass == 1:
                 ear = cure_local_intersections(ear, triangles, dim)
-                earcut_linked(ear, triangles, dim, minX, minY, size, 2)
+                earcut_linked(ear, triangles, dim, min_x, min_y, min_z, size, 2)
 
                 # as a last resort, try splitting the remaining polygon into two
             elif _pass == 2:
-                split_earcut(ear, triangles, dim, minX, minY, size)
+                split_earcut(ear, triangles, dim, min_x, min_y, min_z, size)
 
             break
 
@@ -162,26 +182,29 @@ def is_ear(ear):
     p = ear.next.next
 
     while p != ear.prev:
-        if point_in_triangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) and area(p.prev, p, p.next) >= 0:
+        if point_in_triangle(a.x, a.y, a.z, b.x, b.y, b.z, c.x, c.y, c.z, p.x, p.y, p.z) and \
+                area(p.prev, p, p.next) >= 0:
             return False
         p = p.next
 
     return True
 
 
-def is_ear_hashed(ear, min_x, min_y, size):
+def is_ear_hashed(ear, min_x, min_y, min_z, size):
     a = ear.prev
     b = ear
     c = ear.next
 
     if area(a, b, c) >= 0:
-        return False # reflex, can't be an ear
+        return False  # reflex, can't be an ear
 
     # triangle bbox; min & max are calculated like this for speed
     min_tx = (a.x if a.x < c.x else c.x) if a.x < b.x else (b.x if b.x < c.x else c.x)
     min_ty = (a.y if a.y < c.y else c.y) if a.y < b.y else (b.y if b.y < c.y else c.y)
+    min_tz = (a.z if a.z < c.z else c.z) if a.z < b.z else (b.z if b.z < c.z else c.z)
     max_tx = (a.x if a.x > c.x else c.x) if a.x > b.x else (b.x if b.x > c.x else c.x)
     max_ty = (a.y if a.y > c.y else c.y) if a.y > b.y else (b.y if b.y > c.y else c.y)
+    max_tz = (a.z if a.z > c.z else c.z) if a.z > b.z else (b.z if b.z > c.z else c.z)
 
     # z-order range for the current triangle bbox;
     min_z = z_order(min_tx, min_ty, min_x, min_y, size)
@@ -191,7 +214,8 @@ def is_ear_hashed(ear, min_x, min_y, size):
     p = ear.nextZ
 
     while p and p.z <= max_z:
-        if p != ear.prev and p != ear.next and point_in_triangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) and area(p.prev, p, p.next) >= 0:
+        if p != ear.prev and p != ear.next and point_in_triangle(a.x, a.y, a.z, b.x, b.y, b.z, c.x, c.y, c.z, p.x, p.y,
+                                                                 p.z) and area(p.prev, p, p.next) >= 0:
             return False
         p = p.nextZ
 
@@ -199,7 +223,8 @@ def is_ear_hashed(ear, min_x, min_y, size):
     p = ear.prevZ
 
     while p and p.z >= min_z:
-        if p != ear.prev and p != ear.next and point_in_triangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) and area(p.prev, p, p.next) >= 0:
+        if p != ear.prev and p != ear.next and point_in_triangle(a.x, a.y, a.z, b.x, b.y, b.z, c.x, c.y, c.z, p.x, p.y,
+                                                                 p.z) and area(p.prev, p, p.next) >= 0:
             return False
         p = p.prevZ
 
@@ -234,7 +259,7 @@ def cure_local_intersections(start, triangles, dim):
 
 
 # try splitting polygon into two and triangulate them independently
-def split_earcut(start, triangles, dim, min_x, min_y, size):
+def split_earcut(start, triangles, dim, min_x, min_y, min_z, size):
     # look for a valid diagonal that divides the polygon into two
     do = True
     a = start
@@ -253,8 +278,8 @@ def split_earcut(start, triangles, dim, min_x, min_y, size):
                 c = filter_points(c, c.next)
 
                 # run earcut on each half
-                earcut_linked(a, triangles, dim, min_x, min_y, size)
-                earcut_linked(c, triangles, dim, min_x, min_y, size)
+                earcut_linked(a, triangles, dim, min_x, min_y, min_z, size)
+                earcut_linked(c, triangles, dim, min_x, min_y, min_z, size)
                 return
 
             b = b.next
@@ -291,7 +316,7 @@ def eliminate_holes(data, hole_indices, outer_node, dim):
     return outer_node
 
 
-# find a bridge between vertices that connects hole with an outer ring and and link it
+# find a bridge between vertices that connects hole with an outer ring and link it
 def eliminate_hole(hole, outer_node):
     outer_node = find_hole_bridge(hole, outer_node)
     if outer_node:
@@ -305,6 +330,7 @@ def find_hole_bridge(hole, outer_node):
     p = outer_node
     hx = hole.x
     hy = hole.y
+    hz = hole.z
     qx = -math.inf
     m = None
 
@@ -332,7 +358,7 @@ def find_hole_bridge(hole, outer_node):
         return None
 
     if hx == qx:
-        return m.prev # hole touches outer segment; pick lower endpoint
+        return m.prev  # hole touches outer segment; pick lower endpoint
 
     # look for points inside the triangle of hole point, segment intersection and endpoint;
     # if there are no points found, we have a valid connection;
@@ -341,6 +367,7 @@ def find_hole_bridge(hole, outer_node):
     stop = m
     mx = m.x
     my = m.y
+    mz = m.z
     tan_min = math.inf
     tan = None
 
@@ -350,7 +377,7 @@ def find_hole_bridge(hole, outer_node):
         hx_or_qx = hx if hy < my else qx
         qx_or_hx = qx if hy < my else hx
 
-        if hx >= p.x >= mx and point_in_triangle(hx_or_qx, hy, mx, my, qx_or_hx, hy, p.x, p.y):
+        if hx >= p.x >= mx and point_in_triangle(hx_or_qx, hy, hz, mx, my, mz, qx_or_hx, hy, hz, p.x, p.y, p.z):
 
             tan = abs(hy - p.y) / (hx - p.x)  # tangential
 
@@ -364,7 +391,7 @@ def find_hole_bridge(hole, outer_node):
 
 
 # interlink polygon nodes in z-order
-def index_curve(start, min_x, min_y, size):
+def index_curve(start, min_x, min_y, min_z, size):
     do = True
     p = start
 
@@ -378,8 +405,8 @@ def index_curve(start, min_x, min_y, size):
         p.nextZ = p.next
         p = p.next
 
-    p.prevZ.nextZ = None
-    p.prevZ = None
+    # p.prevZ.nextZ = None
+    # p.prevZ = None
 
     sort_linked(p)
 
@@ -491,10 +518,14 @@ def get_leftmost(start):
 
 
 # check if a point lies within a convex triangle
-def point_in_triangle(ax, ay, bx, by, cx, cy, px, py):
-    return (cx - px) * (ay - py) - (ax - px) * (cy - py) >= 0 and \
-        (ax - px) * (by - py) - (bx - px) * (ay - py) >= 0 and \
-        (bx - px) * (cy - py) - (cx - px) * (by - py) >= 0
+def point_in_triangle(ax, ay, az, bx, by, bz, cx, cy, cz, px, py, pz):
+    point_0 = Point3d(ax, ay, az)
+    point_1 = Point3d(bx, by, bz)
+    point_2 = Point3d(cx, cy, cz)
+    point_to_check = Point3d(px, py, pz)
+    loop = Loop([point_0, point_1, point_2])
+
+    return loop.is_point_in_loop(point_2)
 
 
 # check if a diagonal between two polygon nodes is valid (lies in polygon interior)
@@ -505,12 +536,14 @@ def is_valid_diagonal(a, b):
 
 # signed area of a triangle
 def area(p, q, r):
-    return (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y)
+    polygon = [[p.x, p.y, p.z], [q.x, q.y, q.z], [r.x, r.y, r.z]]
+    return area3d(polygon)
+    # return (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y)
 
 
 # check if two points are equal
 def equals(p1, p2):
-    return p1.x == p2.x and p1.y == p2.y
+    return p1.x == p2.x and p1.y == p2.y and p1.z == p2.z
 
 
 # check if two segments intersect
@@ -566,8 +599,8 @@ def middle_inside(a, b):
 # link two polygon vertices with a bridge; if the vertices belong to the same ring, it splits polygon into two;
 # if one belongs to the outer ring and another to a hole, it merges it into a single ring
 def split_polygon(a, b):
-    a2 = Node(a.i, a.x, a.y)
-    b2 = Node(b.i, b.x, b.y)
+    a2 = Node(a.i, a.x, a.y, a.z)
+    b2 = Node(b.i, b.x, b.y, b.z)
     an = a.next
     bp = b.prev
 
@@ -587,8 +620,8 @@ def split_polygon(a, b):
 
 
 # create a node and optionally link it with previous one (in a circular doubly linked _list)
-def insert_node(i, x, y, last):
-    p = Node(i, x, y)
+def insert_node(i, last, x, y, z=None):
+    p = Node(i, x, y, z)
 
     if not last:
         p.prev = p
@@ -607,15 +640,14 @@ def remove_node(p):
     p.next.prev = p.prev
     p.prev.next = p.next
 
-    if p.prevZ:
-        p.prevZ.nextZ = p.nextZ
-
-    if p.nextZ:
-        p.nextZ.prevZ = p.prevZ
+    # if p.prevZ:
+    #     p.prevZ.nextZ = p.nextZ
+    # if p.nextZ:
+    #     p.nextZ.prevZ = p.prevZ
 
 
 class Node(object):
-    def __init__(self, i, x, y):
+    def __init__(self, i, x, y, z=None):
         # vertex index in coordinates array
         self.i = i
 
@@ -623,17 +655,15 @@ class Node(object):
 
         self.x = x
         self.y = y
+        self.z = z
 
         # previous and next vertex nodes in a polygon ring
         self.prev = None
         self.next = None
 
-        # z-order curve value
-        self.z = None
-
         # previous and next nodes in z-order
-        self.prevZ = None
-        self.nextZ = None
+        # self.prevZ = None
+        # self.nextZ = None
 
         # indicates whether this is a steiner point
         self.steiner = False
@@ -671,13 +701,9 @@ def deviation(data, hole_indices, dim, triangles):
 
 
 def signed_area(data, start, end, dim):
-    sum_area = 0
-    j = end - dim
-
-    for i in range(start, end, dim):
-        sum_area += (data[j] - data[i]) * (data[i + 1] + data[j + 1])
-        j = i
-
+    chopped_data = data[start:end]
+    points = [chopped_data[i:i + dim] for i in range(0, len(chopped_data), dim)]
+    sum_area = area3d(points)
     return sum_area
 
 
