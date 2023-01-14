@@ -19,6 +19,8 @@ def unit_normal(a, b, c):
              [b[0], b[1], 1],
              [c[0], c[1], 1]])
     magnitude = (x ** 2 + y ** 2 + z ** 2) ** .5
+    if magnitude == 0:
+        return 0, 0, 0
     return x / magnitude, y / magnitude, z / magnitude
 
 
@@ -51,5 +53,6 @@ def area(poly):
         total[0] += prod[0]
         total[1] += prod[1]
         total[2] += prod[2]
-    result = dot(total, unit_normal(poly[0], poly[1], poly[2]))
-    return round(abs(result / 2), 5)
+    normal = unit_normal(poly[0], poly[1], poly[2])
+    result = dot(total, normal)
+    return round(result / 2, 5)

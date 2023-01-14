@@ -1,7 +1,7 @@
 import functools
 from src.geometry.vector3d import Vector3d
 from src.geometry.loop import Loop
-from src.eatcut.earcut import earcut
+from src.earcut.earcut import earcut
 
 
 class Face:
@@ -28,37 +28,55 @@ class Face:
     def plane(self):
         return self.outer_loop.plane()
 
+    @functools.cached_property
+    def has_hole(self):
+        return self.inner_loops != 0
+
     def move(self, vector):
         moved_outer_loop = self.outer_loop.move(vector)
         moved_inner_loops = []
         for loop in self.inner_loops:
             moved_inner_loops.append(loop.move(vector))
-        return Face(moved_outer_loop, moved_inner_loops)
+        return self.__class__(moved_outer_loop, moved_inner_loops)
 
     def extrude(self, value):
+        if value == 0:
+            return self
         all_faces = [self]
         all_loops = [self.outer_loop]
         all_loops += self.inner_loops
-        for loop in all_loops:
-            loop_faces = loop.extrude(value)
+        all_faces += self.outer_loop.extrude(value)
+        for loop in self.inner_loops:
+            loop_faces = loop.extrude(value, True)
             all_faces += loop_faces
         move_vector = Vector3d(*self.normal.scale(value))
-        cap = self.move(move_vector)
-        all_faces.append(cap)
+        cap: Face = self.move(move_vector)
+        all_faces.append(cap.reverse())
         return all_faces
+
+    def reverse(self):
+        reversed_outer_loop = self.outer_loop.reverse()
+        reversed_inner_loops = [loop.reverse() for loop in self.inner_loops]
+        return self.__class__(reversed_outer_loop, reversed_inner_loops)
+
+    def offset(self, value):
+        offset_outer_loop = self.outer_loop.offset(value)
+        return self.__class__(offset_outer_loop, self.inner_loops)
 
     def mesh_polygon_vertices(self):
         all_loops = [self.outer_loop]
         all_loops += self.inner_loops
         all_points = self.outer_loop.points[:-1]
+        all_uv_points = self.outer_loop.uv_points()
         hole_start_indexes = []
         for inner_loop in self.inner_loops:
-            hole_start_indexes.append(len(all_points))
+            hole_start_indexes.append(len(all_uv_points))
             all_points += inner_loop.points[:-1]
+            all_uv_points += inner_loop.uv_points(self.outer_loop.plane())
 
         hole_indices = None if len(hole_start_indexes) == 0 else hole_start_indexes
-        flatten_coordinates = [num for sublist in all_points for num in sublist]
-        polygons = earcut(flatten_coordinates, holeIndices=hole_indices, dim=3)
+        flatten_coordinates = [num for sublist in all_uv_points for num in sublist]
+        polygons = earcut(flatten_coordinates, hole_indices=hole_indices)
 
         n = 3
         triangular_polygons = [polygons[i:i + n] for i in range(0, len(polygons), n)]
@@ -69,5 +87,3 @@ class Face:
             triangular_points.append([all_points[tp[0]], all_points[tp[1]], all_points[tp[2]]])
 
         return triangular_points
-
-

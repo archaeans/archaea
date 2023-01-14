@@ -1,5 +1,6 @@
 import functools
 from src.geometry.point3d import Point3d
+from src.geometry.plane import Plane
 from src.geometry.vector3d import Vector3d
 
 
@@ -28,6 +29,9 @@ class LineSegment:
     @functools.cached_property
     def vector(self):
         return self.start.vector_to(self.end)
+
+    def reverse(self):
+        return LineSegment(self.end, self.start)
 
     def point_at(self, t: float) -> Point3d:
         return self.start + self.vector.scale(t)
@@ -58,6 +62,9 @@ class LineSegment:
         closest_point = self.closest_point(point)
         return closest_point.distance_to(point)
 
+    def normal_on_plane(self, plane: Plane):
+        return self.vector.cross_product(plane.normal).normalize()
+
     def distance_to_segment(self, segment):
         if self.is_intersects(segment):
             return 0
@@ -83,8 +90,10 @@ class LineSegment:
         a = p_segment_vector.dot(qp_distance_vector) / p_length**2
         b = p_segment_vector.dot(q_segment_vector) / p_length**2
         c = p_segment_vector.scale(b) - q_segment_vector
-
-        t1 = c.dot(q1 - p1.scale(1 - a) - p2.scale(a)) / c.length**2
+        c_length = c.length
+        if c_length == 0:
+            c_length = 1
+        t1 = c.dot(q1 - p1.scale(1 - a) - p2.scale(a)) / c_length**2
         t0 = a + (t1 * b)
         is_intersects = (0 <= t0 <= 1) and (0 <= t1 <= 1)
         return is_intersects
@@ -98,3 +107,49 @@ class LineSegment:
         from src.geometry.face import Face
         loop = Loop([start, end, extruded_end, extruded_start])
         return Face(loop)
+
+    def move(self, vector):
+        moved_start = self.start.move(vector)
+        moved_end = self.end.move(vector)
+        return LineSegment(moved_start, moved_end)
+
+    @staticmethod
+    def line_intersection(line1, line2):
+        plane = Plane.from_3_point(line1.start, line1.end, line2.start)
+        line1_uv = [plane.plane_coordinates(line1.start), plane.plane_coordinates(line1.end)]
+        line2_uv = [plane.plane_coordinates(line2.start), plane.plane_coordinates(line2.end)]
+        intersected_uv = LineSegment.line_intersection_uv(line1_uv, line2_uv)
+        return plane.point_at(intersected_uv[0], intersected_uv[1])
+
+    @staticmethod
+    def line_intersection_uv(line1, line2):
+        xdiff = (line1[0][0] - line1[1][0], line2[0][0] - line2[1][0])
+        ydiff = (line1[0][1] - line1[1][1], line2[0][1] - line2[1][1])
+
+        def det(a, b):
+            return a[0] * b[1] - a[1] * b[0]
+
+        div = det(xdiff, ydiff)
+        if div == 0:
+            raise Exception('lines do not intersect')
+        d = (det(*line1), det(*line2))
+        x = det(d, xdiff) / div
+        y = det(d, ydiff) / div
+        return x, y
+
+    @staticmethod
+    def line_intersection_2(line1, line2):
+        xdiff = (line1.start.x - line1.end.x, line2.start.x - line2.end.x)
+        ydiff = (line1.start.y - line1.end.y, line2.start.y - line2.end.y)
+
+        def det(a, b):
+            return a[0] * b[1] - a[1] * b[0]
+
+        div = det(xdiff, ydiff)
+        if div == 0:
+            raise Exception('lines do not intersect')
+        d = (det([line1.start.x, line1.start.y], [line1.end.x, line1.end.y]),
+             det([line2.start.x, line2.start.y], [line2.end.x, line2.end.y]))
+        x = det(d, xdiff) / div
+        y = det(d, ydiff) / div
+        return x, y

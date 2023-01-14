@@ -1,4 +1,4 @@
-from coordinate_array import CoordinateArray
+from src.geometry.coordinate_array import CoordinateArray
 
 
 # 2 dimensional vector.
