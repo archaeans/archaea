@@ -36,6 +36,11 @@ class Wall(Face):
     def add_opening(self, opening: Loop):
         self.inner_loops.append(opening)
 
+    def reverse(self):
+        reversed_outer_loop = self.outer_loop.reverse()
+        reversed_inner_loops = [loop.reverse() for loop in self.inner_loops]
+        return Wall(reversed_outer_loop, reversed_inner_loops, self.wall_type, self.thickness)
+
     @functools.cached_property
     def gross_wall_area(self):
         return self.outer_loop.area

@@ -1,6 +1,7 @@
 from src.geometry.face import Face
 from src.geometry.vector3d import Vector3d
 from src.simulation_objects.wall import Wall
+from src.simulation_objects.wall_type import WallType
 
 
 class Zone:
@@ -12,8 +13,9 @@ class Zone:
     wall_default_thickness: float
     openings: "list[Face]"
 
-    def __init__(self, floor: Face, height, walls=None, wall_default_thickness=0.2):
+    def __init__(self, floor: Face, height, walls=None, wall_default_thickness=0.1):
         self.floor = Wall(floor.outer_loop, floor.inner_loops)
+        self.floor.update_wall_type(WallType.INNER)
         self.height = height
         self.wall_default_thickness = wall_default_thickness
         self.volume = self.floor.area * height
