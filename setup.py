@@ -9,6 +9,7 @@ setup(
     author='Oğuzhan Koral',
     author_email='oguzhankoral@gmail.com',
     url='https://github.com/archaeans/archaea',
+    download_url='https://github.com/archaeans/archaea/archive/refs/tags/1.0.0.tar.gz',
     keywords=['geometry', 'mesh', 'stl'],
     install_requires=[
         'numpy',
