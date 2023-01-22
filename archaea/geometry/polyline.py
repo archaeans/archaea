@@ -1,6 +1,6 @@
 import functools
-from src.geometry.line_segment import LineSegment
-from src.geometry.point3d import Point3d
+from archaea.geometry.line_segment import LineSegment
+from archaea.geometry.point3d import Point3d
 
 
 class Polyline:

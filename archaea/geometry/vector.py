@@ -1,4 +1,4 @@
-from src.geometry.coordinate_array import CoordinateArray
+from archaea.geometry.coordinate_array import CoordinateArray
 
 
 # Dimensionless vector for integer and float values.

@@ -1,7 +1,7 @@
 import math
 
-from src.geometry.coordinate_array import CoordinateArray
-from src.geometry.vector import Vector
+from archaea.geometry.coordinate_array import CoordinateArray
+from archaea.geometry.vector import Vector
 
 
 # 3 dimensional vector.

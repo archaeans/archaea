@@ -1,7 +1,7 @@
 import functools
-from src.geometry.point3d import Point3d
-from src.geometry.plane import Plane
-from src.geometry.vector3d import Vector3d
+from archaea.geometry.point3d import Point3d
+from archaea.geometry.plane import Plane
+from archaea.geometry.vector3d import Vector3d
 
 
 # FIXME: Inherit later from base LineSegment object to cover common functionality
@@ -103,8 +103,8 @@ class LineSegment:
         end = self.end
         extruded_start = start.move(vector)
         extruded_end = end.move(vector)
-        from src.geometry.loop import Loop
-        from src.geometry.face import Face
+        from archaea.geometry.loop import Loop
+        from archaea.geometry.face import Face
         loop = Loop([start, end, extruded_end, extruded_start])
         return Face(loop)
 

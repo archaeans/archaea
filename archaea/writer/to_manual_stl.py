@@ -1,9 +1,9 @@
 from typing import TextIO
 from pathlib import Path
 
-from src.geometry.face import Face
-from src.geometry.point3d import Point3d
-from src.geometry.triangle import Triangle
+from archaea.geometry.face import Face
+from archaea.geometry.point3d import Point3d
+from archaea.geometry.triangle import Triangle
 
 p1 = Point3d(0, 0, 0)
 p2 = Point3d(10, 0, 0)

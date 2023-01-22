@@ -185,4 +185,4 @@ fabric.properties
 .idea
 
 # format folder
-src/format/export/*
+archaea/format/export/*

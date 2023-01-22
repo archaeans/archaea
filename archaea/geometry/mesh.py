@@ -1,6 +1,6 @@
-from src.geometry.point3d import Point3d
-from src.geometry.face import Face
-from src.writer.to_stl import to_stl
+from archaea.geometry.point3d import Point3d
+from archaea.geometry.face import Face
+from archaea.writer.to_stl import to_stl
 import numpy as np
 
 

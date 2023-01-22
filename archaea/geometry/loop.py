@@ -1,12 +1,12 @@
 import functools
-from src.geometry.point3d import Point3d
-from src.geometry.point2d import Point2d
-from src.geometry.vector3d import Vector3d
-from src.geometry.line_segment import LineSegment
-from src.geometry.polyline import Polyline
-from src.geometry.plane import Plane
-from src.geometry.utils import area
-from src.geometry.orientation import Orientation
+from archaea.geometry.point3d import Point3d
+from archaea.geometry.point2d import Point2d
+from archaea.geometry.vector3d import Vector3d
+from archaea.geometry.line_segment import LineSegment
+from archaea.geometry.polyline import Polyline
+from archaea.geometry.plane import Plane
+from archaea.geometry.utils import area
+from archaea.geometry.orientation import Orientation
 
 
 class Loop(Polyline):
@@ -61,7 +61,7 @@ class Loop(Polyline):
         return Plane.from_3_point(self.points[0], self.points[1], self.points[2])
 
     def to_face(self):
-        from src.geometry.face import Face
+        from archaea.geometry.face import Face
         return Face(self)
 
     def move(self, vector):

@@ -1,5 +1,5 @@
 import unittest
-from src.geometry.coordinate_array import CoordinateArray
+from archaea.geometry.coordinate_array import CoordinateArray
 
 
 class Setup(unittest.TestLoader):

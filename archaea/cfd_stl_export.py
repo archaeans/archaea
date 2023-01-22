@@ -1,19 +1,21 @@
 import sys
 import getopt
+from archaea.simulation_objects.domain import Domain
+from archaea.geometry.point3d import Point3d
 
 
 def cfd_stl_export(argv):
     # Default values
-    arg_domain_width = 100
-    arg_domain_depth = 30
-    arg_domain_height = 50
+    arg_domain_width = 100.0
+    arg_domain_depth = 50.0
+    arg_domain_height = 50.0
     arg_number_of_storeys = 1
-    arg_number_of_rooms = 0
-    arg_courtyard_width = 0
-    arg_room_width = 0
-    arg_room_depth = 0
-    arg_room_height = 0
-    arg_room_wall_thickness = 0
+    arg_number_of_rooms = 3
+    arg_courtyard_width = 10.0
+    arg_room_width = 4.0
+    arg_room_depth = 4.0
+    arg_room_height = 3.0
+    arg_room_wall_thickness = 0.1
     arg_room_window_existence = 1
     arg_room_window_width = 0.6
     arg_room_window_height = 1.2
@@ -24,22 +26,22 @@ def cfd_stl_export(argv):
     arg_help = "{0}\n\n" \
                "Welcome to stl exporter program for cfd calculations! \n" \
                "Use below flags to generate stl.\n" \
-               " -dw\t--domain-width               <domain_width> \n" \
-               " -dd\t--domain-depth               <domain_depth> \n" \
-               " -dh\t--domain-height              <domain_height> \n" \
-               " -nos\t--number-of-storeys         <number_of_storeys> \n" \
-               " -nor\t--number-of-rooms           <number_of_rooms> \n" \
-               " -cw\t--courtyard-width            <courtyard_width> \n" \
-               " -rw\t--room-width                 <room_width> \n" \
-               " -rd\t--room-depth                 <room_depth> \n" \
-               " -rh\t--room-height                <room_height> \n" \
-               " -rwt\t--room-wall-thickness       <room_wall_thickness> \n" \
-               " -rwe\t--room-window-existence     <room_window_existence> \n" \
-               " -rww\t--room-window-width         <room_window_width> \n" \
-               " -rwh\t--room-window-height        <room_window_height> \n" \
-               " -rde\t--room-door-existence       <room_door_existence> \n" \
-               " -rdw\t--room-door-width           <room_door_width> \n" \
-               " -rdh\t--room-door-height          <room_door_height> \n".format(argv[0])
+               " -dw\t--domain-width               <domain_width>            default: 100.0\n" \
+               " -dd\t--domain-depth               <domain_depth>            default: 50.0\n" \
+               " -dh\t--domain-height              <domain_height>           default: 50.0\n" \
+               " -nos\t--number-of-storeys         <number_of_storeys>        default: 1\n" \
+               " -nor\t--number-of-rooms           <number_of_rooms>          default: 3\n" \
+               " -cw\t--courtyard-width            <courtyard_width>         default: 10.0\n" \
+               " -rw\t--room-width                 <room_width>              default: 4.0\n" \
+               " -rd\t--room-depth                 <room_depth>              default: 4.0\n" \
+               " -rh\t--room-height                <room_height>             default: 3.0\n" \
+               " -rwt\t--room-wall-thickness       <room_wall_thickness>      default: 0.1\n" \
+               " -rwe\t--room-window-existence     <room_window_existence>    default: 1\n" \
+               " -rww\t--room-window-width         <room_window_width>        default: 0.6\n" \
+               " -rwh\t--room-window-height        <room_window_height>       default: 1.2\n" \
+               " -rde\t--room-door-existence       <room_door_existence>      default: 1\n" \
+               " -rdw\t--room-door-width           <room_door_width>          default: 0.8\n" \
+               " -rdh\t--room-door-height          <room_door_height>         default: 2.0\n".format(argv[0])
 
     try:
         opts, args = getopt.getopt(argv[1:], "hdw:dd:dh:nos:nor:cw:rw:rd:rh:rwt:rwe:rww:rwh:rde:rdw:rdh:",
@@ -63,6 +65,11 @@ def cfd_stl_export(argv):
     except ValueError:
         print(arg_help)
         sys.exit(2)
+
+    # if user does not provide any argument, print help message
+    if len(opts) == 0:
+        print(arg_help)  # print the help message
+        print("NOTE: Stl generated with default parameters because no argument provided.\n")
 
     # Find the upcoming flag and set it to it's value
     for opt, arg in opts:
@@ -101,6 +108,8 @@ def cfd_stl_export(argv):
             arg_room_door_width = arg
         elif opt in ("-dwh", "--door-window-height"):
             arg_room_door_height = arg
+
+    domain = Domain(Point3d.origin(), arg_domain_width, arg_domain_depth, arg_domain_height)
 
 
 if __name__ == "__main__":
