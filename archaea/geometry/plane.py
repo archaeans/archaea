@@ -1,6 +1,6 @@
 import functools
-from src.geometry.vector3d import Vector3d
-from src.geometry.point3d import Point3d
+from archaea.geometry.vector3d import Vector3d
+from archaea.geometry.point3d import Point3d
 
 
 class Plane:

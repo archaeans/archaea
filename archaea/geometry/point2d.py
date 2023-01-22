@@ -1,5 +1,5 @@
-from src.geometry.coordinate_array import CoordinateArray
-from src.geometry.vector2d import Vector2d
+from archaea.geometry.coordinate_array import CoordinateArray
+from archaea.geometry.vector2d import Vector2d
 
 
 # 2 dimensional point.

@@ -1,5 +1,5 @@
-from src.geometry.coordinate_array import CoordinateArray
-from src.geometry.vector3d import Vector3d
+from archaea.geometry.coordinate_array import CoordinateArray
+from archaea.geometry.vector3d import Vector3d
 
 
 # 3 dimensional point.
@@ -36,3 +36,7 @@ class Point3d(CoordinateArray):
 
     def distance_to(self, other):
         return (((self.x - other.x) ** 2) + ((self.y - other.y) ** 2) + ((self.z - other.z) ** 2)) ** 0.5
+
+    @classmethod
+    def origin(cls):
+        cls(0, 0, 0)

@@ -1,6 +1,6 @@
 import unittest
-from src.geometry.point3d import Point3d
-from src.geometry.utils import area
+from archaea.geometry.point3d import Point3d
+from archaea.geometry.utils import area
 
 
 

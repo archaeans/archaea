@@ -1,8 +1,8 @@
 import math
-from src.geometry.utils import area as area3d
-from src.geometry.plane import Plane
-from src.geometry.point3d import Point3d
-from src.geometry.loop import Loop
+from archaea.geometry.utils import area as area3d
+from archaea.geometry.plane import Plane
+from archaea.geometry.point3d import Point3d
+from archaea.geometry.loop import Loop
 
 __all__ = ['earcut', 'deviation', 'flatten']
 

@@ -1,7 +1,7 @@
 import functools
-from src.geometry.face import Face
-from src.geometry.loop import Loop
-from src.simulation_objects.wall_type import WallType
+from archaea.geometry.face import Face
+from archaea.geometry.loop import Loop
+from archaea.simulation_objects.wall_type import WallType
 
 
 class Wall(Face):

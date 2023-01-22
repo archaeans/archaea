@@ -1,6 +1,6 @@
 import unittest
-from src.geometry.vector import Vector
-from src.geometry.vector3d import Vector3d
+from archaea.geometry.vector import Vector
+from archaea.geometry.vector3d import Vector3d
 
 
 class Setup(unittest.TestLoader):

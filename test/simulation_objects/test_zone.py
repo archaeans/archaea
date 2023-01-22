@@ -1,12 +1,12 @@
 import unittest
-from src.geometry.vector3d import Vector3d
-from src.geometry.point3d import Point3d
-from src.geometry.loop import Loop
-from src.geometry.face import Face
-from src.geometry.mesh import Mesh
-from src.simulation_objects.wall import Wall
-from src.simulation_objects.zone import Zone
-from src.simulation_objects.wall_type import WallType
+from archaea.geometry.vector3d import Vector3d
+from archaea.geometry.point3d import Point3d
+from archaea.geometry.loop import Loop
+from archaea.geometry.face import Face
+from archaea.geometry.mesh import Mesh
+from archaea.simulation_objects.wall import Wall
+from archaea.simulation_objects.zone import Zone
+from archaea.simulation_objects.wall_type import WallType
 
 
 class Setup(unittest.TestLoader):
