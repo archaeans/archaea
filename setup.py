@@ -4,7 +4,7 @@ setup(
     name='archaea',
     packages=['archaea', 'archaea.geometry', 'archaea.earcut'],
     version='1.1.3',
-    license='MIT',
+    license='Apache 2.0',
     description='Playground for Geometry!',
     readme='README.md',
     author='Oğuzhan Koral',
