@@ -14,4 +14,3 @@ from archaea.geometry.orientation import Orientation
 from archaea.geometry.utils import *
 from archaea.geometry.face import Face
 from archaea.geometry.mesh import Mesh
-
