@@ -6,6 +6,7 @@ setup(
     version='1.1.0',
     license='MIT',
     description='Playground for Geometry!',
+    readme='README.md',
     author='Oğuzhan Koral',
     author_email='oguzhankoral@gmail.com',
     url='https://github.com/archaeans/archaea',
