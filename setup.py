@@ -3,18 +3,18 @@ from distutils.core import setup
 setup(
     name='archaea',
     packages=['archaea', 'archaea.geometry', 'archaea.earcut', 'archaea.writer'],
-    version='1.1.5',
+    version='1.1.6',
     license='Apache 2.0',
     description='Playground for Geometry!',
     readme='README.md',
     author='Oğuzhan Koral',
     author_email='oguzhankoral@gmail.com',
     url='https://github.com/archaeans/archaea',
-    download_url='https://github.com/archaeans/archaea/archive/refs/tags/1.1.5.tar.gz',
+    download_url='https://github.com/archaeans/archaea/archive/refs/tags/1.1.6.tar.gz',
     keywords=['geometry', 'mesh', 'stl', 'triangulation'],
     install_requires=[
         'numpy',
-        'stl'
+        'numpy-stl'
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',
