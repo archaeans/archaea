@@ -8,9 +8,8 @@ from archaea.geometry.plane import Plane
 from archaea.geometry.loop import Loop
 from archaea.geometry.line_segment import LineSegment
 from archaea.geometry.polyline import Polyline
-from archaea.geometry.triangle import Triangle
 from archaea.geometry.orientation import Orientation
-from archaea.geometry.utils import area, unit_normal
+from archaea.geometry.utils import *
 from archaea.geometry.face import Face
 from archaea.geometry.mesh import Mesh
 from archaea.writer.to_stl import to_stl
