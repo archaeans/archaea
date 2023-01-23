@@ -13,4 +13,5 @@ from archaea.geometry.orientation import Orientation
 from archaea.geometry.utils import area, unit_normal
 from archaea.geometry.face import Face
 from archaea.geometry.mesh import Mesh
+from archaea.writer.to_stl import to_stl
 
