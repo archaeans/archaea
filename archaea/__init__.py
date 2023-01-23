@@ -1,3 +1,5 @@
+from archaea.writer.to_stl import to_stl
+from archaea.earcut.earcut import *
 from archaea.geometry.coordinate_array import CoordinateArray
 from archaea.geometry.vector import Vector
 from archaea.geometry.vector2d import Vector2d
@@ -12,6 +14,4 @@ from archaea.geometry.orientation import Orientation
 from archaea.geometry.utils import *
 from archaea.geometry.face import Face
 from archaea.geometry.mesh import Mesh
-from archaea.writer.to_stl import to_stl
-from archaea.earcut.earcut import *
 
