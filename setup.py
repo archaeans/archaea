@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='archaea',
-    packages=['archaea', 'archaea.geometry', 'archaea.earcut'],
+    packages=['archaea', 'archaea.geometry', 'archaea.earcut', 'archaea.writer'],
     version='1.1.3',
     license='Apache 2.0',
     description='Playground for Geometry!',
