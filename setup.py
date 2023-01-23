@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='archaea',
-    packages=['scrapeasy'],
+    packages=['archaea', 'archaea.geometry', 'archaea.earcut'],
     version='1.0.0',
     license='MIT',
     description='Playground for Geometry!',
