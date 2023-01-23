@@ -3,14 +3,14 @@ from distutils.core import setup
 setup(
     name='archaea',
     packages=['archaea', 'archaea.geometry', 'archaea.earcut', 'archaea.writer'],
-    version='1.1.3',
+    version='1.1.4',
     license='Apache 2.0',
     description='Playground for Geometry!',
     readme='README.md',
     author='Oğuzhan Koral',
     author_email='oguzhankoral@gmail.com',
     url='https://github.com/archaeans/archaea',
-    download_url='https://github.com/archaeans/archaea/archive/refs/tags/1.1.3.tar.gz',
+    download_url='https://github.com/archaeans/archaea/archive/refs/tags/1.1.4.tar.gz',
     keywords=['geometry', 'mesh', 'stl'],
     install_requires=[
         'numpy',
