@@ -1,16 +1,21 @@
-from distutils.core import setup
+import setuptools
 
-setup(
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
+setuptools.setup(
     name='archaea',
-    packages=['archaea', 'archaea.geometry', 'archaea.earcut', 'archaea.writer'],
-    version='1.1.6',
+    packages=setuptools.find_packages(exclude=['extensions', 'test', 'format']),
+    version='1.1.7',
     license='Apache 2.0',
-    description='Playground for Geometry!',
+    description='Playground for geometry.',
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     readme='README.md',
     author='Oğuzhan Koral',
     author_email='oguzhankoral@gmail.com',
     url='https://github.com/archaeans/archaea',
-    download_url='https://github.com/archaeans/archaea/archive/refs/tags/1.1.6.tar.gz',
+    download_url='https://github.com/archaeans/archaea/archive/refs/tags/1.1.7.tar.gz',
     keywords=['geometry', 'mesh', 'stl', 'triangulation'],
     install_requires=[
         'numpy',
