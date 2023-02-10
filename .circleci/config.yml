@@ -2,7 +2,11 @@ version: 2.1
 jobs:
   build_test:
     docker:
-      - image: circleci/python:3.6.4
+      - image: "cimg/python:<<parameters.tag>>"
+    parameters:
+      tag:
+        default: "3.8"
+        type: string
     steps:
       - checkout  # checkout source code to working directory
       - run:
@@ -16,7 +20,7 @@ jobs:
             pipenv run pytest
   test_pypi_publish:
     docker:
-      - image: circleci/python:3.6.4
+      - image: "cimg/python:3.8"
     steps:
       - checkout  # checkout source code to working directory
       - run:
@@ -27,7 +31,7 @@ jobs:
             pipenv run twine upload --repository testpypi dist/*
   pypi_publish:
     docker:
-      - image: circleci/python:3.6.4
+      - image: "cimg/python:3.8"
     steps:
       - checkout  # checkout source code to working directory
       - run:
