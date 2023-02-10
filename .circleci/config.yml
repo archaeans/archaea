@@ -4,7 +4,7 @@ orbs:
   python: circleci/python@2.0.3
 
 jobs:
-  build_test:
+  test:
     docker:
       - image: "cimg/python:<<parameters.tag>>"
     parameters:
@@ -21,45 +21,31 @@ jobs:
           pkg-manager: poetry
       - run: poetry run pytest --cov --cov-report xml:reports/coverage.xml --junitxml=reports/test-results.xml
 
+  deploy:
+    docker:
+      - image: "cimg/python:3.8"
+    steps:
+      - checkout
+      - run: python patch_version.py $CIRCLE_TAG
+      - run: poetry build
+      - run: poetry publish -u __token__ -p $PYPI_TOKEN
 
-  test_pypi_publish:
-    docker:
-      - image: "cimg/python:3.8"
-    steps:
-      - checkout  # checkout source code to working directory
-      - run:
-          command: |  # create whl, install twine and publish to Test PyPI
-            python setup.py sdist bdist_wheel
-            sudo pip install pipenv
-            pipenv install twine
-            pipenv run twine upload --repository testpypi dist/*
-  pypi_publish:
-    docker:
-      - image: "cimg/python:3.8"
-    steps:
-      - checkout  # checkout source code to working directory
-      - run:
-          command: |  # create whl, install twine and publish to PyPI
-            python setup.py sdist bdist_wheel
-            python patch_version.py $CIRCLE_TAG
-            sudo pip install pipenv
-            pipenv install twine
-            pipenv run twine upload dist/*
 workflows:
-  build_test_publish:
+  main:
     jobs:
-      - build_test
-      - test_pypi_publish:
-          requires:
-            - build_test
+      - test:
+          matrix:
+            parameters:
+              tag: [ "3.8", "3.9", "3.10", "3.11" ]
           filters:
-            branches:
-              only:
-                - develop
-      - pypi_publish:
+            tags:
+              only: /.*/
+      - deploy:
+          context: pypi
           requires:
-            - build_test
+            - test
           filters:
+            tags:
+              only: /[0-9]+(\.[0-9]+)*/
             branches:
-              only:
-                - main
+              ignore: /.*/ # For testing only! /ci\/.*/
