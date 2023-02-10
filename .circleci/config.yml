@@ -1,0 +1,51 @@
+version: 2.1
+
+orbs:
+  python: circleci/python@2.0.3
+
+jobs:
+  test:
+    docker:
+      - image: "cimg/python:<<parameters.tag>>"
+    parameters:
+      tag:
+        default: "3.8"
+        type: string
+    steps:
+      - checkout  # checkout source code to working directory
+      - run: python --version
+      - run:
+          command: python -m pip install --upgrade pip
+          name: upgrade pip
+      - python/install-packages:
+          pkg-manager: poetry
+      - run: poetry run pytest --cov --cov-report xml:reports/coverage.xml --junitxml=reports/test-results.xml
+
+  deploy:
+    docker:
+      - image: "cimg/python:3.8"
+    steps:
+      - checkout
+      - run: python patch_version.py $CIRCLE_TAG
+      - run: poetry build
+      - run: poetry publish -u __token__ -p $PYPI_TOKEN
+
+workflows:
+  main:
+    jobs:
+      - test:
+          matrix:
+            parameters:
+              tag: [ "3.8", "3.9", "3.10", "3.11" ]
+          filters:
+            tags:
+              only: /.*/
+      - deploy:
+          context: pypi
+          requires:
+            - test
+          filters:
+            tags:
+              only: /[0-9]+(\.[0-9]+)*/
+            branches:
+              ignore: /.*/ # For testing only! /ci\/.*/
