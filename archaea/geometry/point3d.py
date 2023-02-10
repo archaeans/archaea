@@ -39,4 +39,4 @@ class Point3d(CoordinateArray):
 
     @classmethod
     def origin(cls):
-        cls(0, 0, 0)
+        return cls(0, 0, 0)
