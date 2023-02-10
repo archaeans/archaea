@@ -25,9 +25,7 @@ classifiers = [
         'Programming Language :: Python :: 3.11',
     ]
 packages = [
-    { include = "geometry", from = "archaea"},
-    { include = "earcut", from = "archaea"},
-    { include = "writer", from = "archaea"},
+    { include = "archaea", from = "."}
 ]
 
 [tool.poetry.dependencies]
