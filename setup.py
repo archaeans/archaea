@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 setuptools.setup(
     name='archaea',
     packages=setuptools.find_packages(exclude=['archaea.extensions', 'archaea.format', 'test']),
-    version='1.1.9',
+    version='1.1.10',
     license='Apache 2.0',
     description='Playground for geometry.',
     long_description=long_description,
@@ -15,7 +15,7 @@ setuptools.setup(
     author='Oğuzhan Koral',
     author_email='oguzhankoral@gmail.com',
     url='https://github.com/archaeans/archaea',
-    download_url='https://github.com/archaeans/archaea/archive/refs/tags/1.1.9.tar.gz',
+    download_url='https://github.com/archaeans/archaea/archive/refs/tags/1.1.10.tar.gz',
     keywords=['geometry', 'mesh', 'stl', 'triangulation'],
     install_requires=[
         'numpy',
