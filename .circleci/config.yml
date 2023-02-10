@@ -15,12 +15,12 @@ jobs:
       - checkout  # checkout source code to working directory
       - run: python --version
       - run:
-          command: python -m pip install --upgrade pip
-          name: upgrade pip
-      - python/install-packages:
-          pkg-manager: poetry
-      - run: poetry run pytest --cov --cov-report xml:reports/coverage.xml --junitxml=reports/test-results.xml
-      - run: poetry build
+          command: |  # create whl, install twine and publish to Test PyPI
+            python setup.py sdist bdist_wheel
+            sudo pip install pipenv
+            pipenv install twine
+            pipenv run twine upload --repository testpypi dist/*
+
 
   test_pypi_publish:
     docker:
