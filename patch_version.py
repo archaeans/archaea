@@ -5,14 +5,14 @@ import sys
 def patch(tag):
     print(f"Patching version: {tag}")
 
-    with open("setup.py", "r") as f:
+    with open("pyproject.toml", "r") as f:
         lines = f.readlines()
 
         if "version" not in lines[2]:
-            raise Exception("Invalid setup.py. Could not patch version.")
+            raise Exception("Invalid pyproject.toml. Could not patch version.")
 
-        lines[5] = f'\tversion="{tag}"\n'
-        with open("setup.py", "w") as file:
+        lines[2] = f'version = "{tag}"\n'
+        with open("pyproject.toml", "w") as file:
             file.writelines(lines)
 
 
