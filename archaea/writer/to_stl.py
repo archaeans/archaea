@@ -35,4 +35,4 @@ def to_stl(faces, vertices, file_name):
             stl.vectors[i][j] = vertices[f[j], :]
 
     # Write the mesh to file
-    stl.save('%s.stl' % file_name)
+    stl.save('%s.stl' % file_name, mode=stl.Mode.ASCII)
