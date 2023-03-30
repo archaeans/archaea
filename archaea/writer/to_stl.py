@@ -1,5 +1,6 @@
 import numpy as np
 from stl import mesh
+import stl
 
 # faces = np.array(
 #     [
@@ -29,10 +30,10 @@ from stl import mesh
 
 
 def to_stl(faces, vertices, file_name):
-    stl = mesh.Mesh(np.zeros(faces.shape[0], dtype=mesh.Mesh.dtype))
+    geo = mesh.Mesh(np.zeros(faces.shape[0], dtype=mesh.Mesh.dtype))
     for i, f in enumerate(faces):
         for j in range(3):
-            stl.vectors[i][j] = vertices[f[j], :]
+            geo.vectors[i][j] = vertices[f[j], :]
 
     # Write the mesh to file
-    stl.save('%s.stl' % file_name, mode=stl.Mode.ASCII)
+    geo.save('%s.stl' % file_name, mode=stl.Mode.ASCII)
