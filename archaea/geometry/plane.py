@@ -39,6 +39,11 @@ class Plane:
         plane_coordinates = self.plane_coordinates(point)
         return self.point_at(plane_coordinates[0], plane_coordinates[1])
 
+    def project_to_plane_on_z(self, point):
+        d = self.normal.dot(self.origin.position_vector)
+        z_value_on_plane = (d - (self.normal.x * point.x) - (self.normal.y * point.y)) / self.normal.z
+        return Point3d(point.x, point.y, z_value_on_plane)
+
     def is_on_plane(self, point):
         return point.distance_to(self.project_to_plane(point)) < 1e-5
 
