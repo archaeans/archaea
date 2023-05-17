@@ -29,11 +29,11 @@ import stl
 # to_stl(faces, vertices, "test")
 
 
-def to_stl(faces, vertices, file_name):
+def to_stl(faces, vertices, file_path):
     geo = mesh.Mesh(np.zeros(faces.shape[0], dtype=mesh.Mesh.dtype))
     for i, f in enumerate(faces):
         for j in range(3):
             geo.vectors[i][j] = vertices[f[j], :]
 
     # Write the mesh to file
-    geo.save('%s.stl' % file_name, mode=stl.Mode.ASCII)
+    geo.save('%s.stl' % file_path, mode=stl.Mode.ASCII)

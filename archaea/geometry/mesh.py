@@ -2,6 +2,7 @@ from archaea.geometry.point3d import Point3d
 from archaea.geometry.face import Face
 from archaea.writer.to_stl import to_stl
 import numpy as np
+import os
 
 
 class Mesh:
@@ -36,4 +37,5 @@ class Mesh:
     def to_stl(self, path, file_name):
         vertices = np.array([vertex.to_a() for vertex in self.vertices])
         faces = np.array(self.polygons)
-        to_stl(faces, vertices, file_name)
+        file_path = os.path.join(path, file_name)
+        to_stl(faces, vertices, file_path)
