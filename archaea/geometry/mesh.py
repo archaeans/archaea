@@ -13,14 +13,14 @@ class Mesh:
         self.polygons = []
         self.vertices = []
 
-    def add_from_faces(self, faces: "list[Face]"):
+    def add_from_faces(self, faces: "list[Face]", share_vertices: bool = True):
         for face in faces:
-            self.add_from_face(face)
+            self.add_from_face(face, share_vertices)
 
     def add_from_face(self, face: Face, share_vertices: bool = True):
         face_vertices = face.mesh_polygon_vertices()
         for vertices in face_vertices:
-            self.add_polygon(vertices)
+            self.add_polygon(vertices, share_vertices)
 
     def add_polygon(self, vertices: "list[Point3d]", share_vertices: bool = True):
         polygon_indexes = []
