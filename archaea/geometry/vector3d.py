@@ -47,3 +47,21 @@ class Vector3d(Vector):
 
         return math.degrees(result)
 
+    def normalized(self):
+        length = self.length
+        if length == 0:
+            return Vector3d(0, 0, 0)
+        return Vector3d(self.x / length, self.y / length, self.z / length)
+
+    def rotate(self, axis, angle, origin_point):
+        # Calculate the vector from the origin to the point
+        vector_to_point = self - origin_point.position_vector
+
+        # Perform the rotation
+        rotated_vector = vector_to_point.rotate(axis, angle)
+
+        # Calculate the final position after rotation
+        rotated_point = origin_point.position_vector + rotated_vector
+
+        return Vector3d(rotated_point.x, rotated_point.y, rotated_point.z)
+

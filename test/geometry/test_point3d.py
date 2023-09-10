@@ -1,5 +1,6 @@
 import unittest
 from archaea.geometry.point3d import Point3d
+from archaea.geometry.vector3d import Vector3d
 
 
 class Setup(unittest.TestLoader):
@@ -21,3 +22,11 @@ class TestPoint3d(unittest.TestCase):
 
         # Assert
         self.assertEqual(distance, 2)
+
+    def test_rotate(self):
+        # Act
+        rotated_point = Setup.point3d_1.rotate(Vector3d(0, 0, 1), 90, Setup.point3d_2)
+
+        # Assert
+        self.assertAlmostEqual(rotated_point.x, 2,  delta=1e05)
+        self.assertAlmostEqual(rotated_point.y, -1, delta=1e05)

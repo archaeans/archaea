@@ -1,5 +1,6 @@
 import unittest
 from archaea.geometry.point3d import Point3d
+from archaea.geometry.vector3d import Vector3d
 from archaea.geometry.loop import Loop
 from archaea.geometry.face import Face
 from archaea.geometry.mesh import Mesh
@@ -70,11 +71,18 @@ class TestMesh(unittest.TestCase):
     def test_multiple_polygon_to_stl(self):
         # Arrange
         mesh = Mesh()
-        mesh.add_polygon(Setup.face_triangle_1.outer_loop.points[:-1])
         mesh.add_polygon(Setup.face_triangle_2.outer_loop.points[:-1])
 
         # Act
         mesh.to_stl("", "test")
+
+    def test_rotated_multiple_polygon_to_stl(self):
+        # Arrange
+        mesh = Mesh()
+        mesh.add_polygon(Setup.face_triangle_2.outer_loop.points[:-1])
+
+        # Act
+        mesh.rotate(Vector3d(0, 0, 1), 90, Point3d(1,0,0)).to_stl("", "test_rotated")
 
     def test_extruded_faces_to_stl(self):
         # Arrange

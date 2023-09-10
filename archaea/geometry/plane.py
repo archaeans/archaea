@@ -50,3 +50,20 @@ class Plane:
     def is_same_plane(self, other):
         return (self.is_on_plane(other.origin)) and self.is_on_plane(other.point_at(1, 0) and
                                                                      self.is_on_plane(other.point_at(0, 1)))
+
+    def rotate(self, axis, angle, origin_point=None):
+        if origin_point is None:
+            origin_point = self.origin
+
+        # Calculate the vector from the origin to the point
+        vector_to_point = self.origin.vector_to(origin_point.position_vector)
+
+        # Perform the rotation on the origin
+        rotated_origin = origin_point.rotate(axis, angle)
+
+        # Calculate the final position of the origin after rotation
+        self.origin = rotated_origin
+
+        # Rotate the u and v vectors
+        self.u = self.u.rotate(axis, angle)
+        self.v = self.v.rotate(axis, angle)

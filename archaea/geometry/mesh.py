@@ -1,3 +1,5 @@
+from typing import List
+
 from archaea.geometry.point3d import Point3d
 from archaea.geometry.face import Face
 from archaea.writer.to_stl import to_stl
@@ -9,9 +11,15 @@ class Mesh:
     polygons: "list[list[int]]"
     vertices: "list[Point3d]"
 
-    def __init__(self):
-        self.polygons = []
-        self.vertices = []
+    def __init__(self, polygons=None, vertices=None):
+        if polygons is None:
+            self.polygons = []
+        else:
+            self.polygons = polygons
+        if vertices is None:
+            self.vertices = []
+        else:
+            self.vertices = vertices
 
     def add_from_faces(self, faces: "list[Face]", share_vertices: bool = True):
         for face in faces:
@@ -44,3 +52,33 @@ class Mesh:
         faces = np.array(self.polygons)
         file_path = os.path.join(path, file_name)
         to_stl(faces, vertices, file_path)
+
+    def find_average_point(self) -> Point3d:
+        # Initialize variables to store the sum of coordinates
+        sum_x = sum_y = sum_z = 0
+
+        # Iterate through the list of points and sum up their coordinates
+        for point in self.vertices:
+            sum_x += point.x
+            sum_y += point.y
+            sum_z += point.z
+
+        # Calculate the average by dividing by the number of points
+        num_points = len(self.vertices)
+        average_x = sum_x / num_points
+        average_y = sum_y / num_points
+        average_z = sum_z / num_points
+
+        # Create and return the average point
+        return Point3d(average_x, average_y, average_z)
+
+    def rotate(self, axis, angle, origin=None):
+        origin_to_rotate_around = origin
+        if origin is None:
+            origin_to_rotate_around = self.find_average_point()
+
+        rotated_vertices = []
+        for point in self.vertices:
+            rotated_vertices.append(point.rotate(axis, angle, origin_to_rotate_around))
+
+        return Mesh(self.polygons, rotated_vertices)
