@@ -8,6 +8,9 @@ __pycache__/
 # C extensions
 *.so
 
+# Ignore stl files
+*.stl
+
 # Distribution / packaging
 .Python
 env/

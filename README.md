@@ -33,3 +33,35 @@ like LineSegment, Polyline, Mesh..
 - Reverse: LineSegment, Polyline, Loop and Face can be reversed.
 - Offset: Loops and Faces can be offseted.
 - Extrude: Faces can be extruded that creates list of Faces. Holes also covered.
+
+## Setup Local Environment
+
+### Setup for virtual environment
+
+```bash
+git clone git@github.com:archaeans/archaea.git
+
+mkdir venv
+
+sudo apt install python3.10-venv
+
+python3 -m venv $HOME/..path../archaea/venv
+
+source ./venv/bin/activate
+
+python3 setup.py install
+
+```
+
+!!! NOTE
+    if `python3 setup.py install` doesn't install dependencies, try to install them separately like `pip3 install numpy-stl`
+
+### Setup VS Code
+
+1. Ctrl + Shift + P
+
+2. Python: Select Interpreter
+
+3. Enter Interpreter Path
+
+4. Find python in virtual environment /venv/bin/python
