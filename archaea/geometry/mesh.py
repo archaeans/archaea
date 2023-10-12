@@ -21,6 +21,32 @@ class Mesh:
         else:
             self.vertices = vertices
 
+    @classmethod
+    def from_ngon_mesh(cls, flat_point_values: "list[float]", ngon_mesh_indices: "list[int]"):
+        points = []
+        for i in range(0, len(flat_point_values), 3):
+            pt = flat_point_values[i:i+3]
+            points.append(Point3d(pt[0], pt[1], pt[2]))
+        triangles = []
+        i = 0
+
+        while i < len(ngon_mesh_indices):
+            num_edges = ngon_mesh_indices[i]
+            i += 1
+            polygon = ngon_mesh_indices[i:i + num_edges]
+            i += num_edges
+
+            if num_edges == 3:
+                # If it's already a triangle, just add it to the list
+                triangles.append(polygon)
+            else:
+                # Split the NGON into triangles while maintaining the same orientation
+                for j in range(1, num_edges - 1):
+                    triangles.append([polygon[0], polygon[j], polygon[j + 1]])
+        
+        return cls(triangles, points)
+        
+
     def add_from_faces(self, faces: "list[Face]", share_vertices: bool = True):
         for face in faces:
             self.add_from_face(face, share_vertices)

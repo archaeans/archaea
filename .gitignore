@@ -16,6 +16,7 @@ __pycache__/
 
 # Ignore stl files
 *.stl
+.stl
 
 # Distribution / packaging
 .Python

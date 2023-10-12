@@ -187,6 +187,21 @@ class TestMesh(unittest.TestCase):
         mesh.add_from_faces([Setup.face_rectangle_with_holes, moved_face])
         mesh.to_stl("", "test_offset_and_move_face_with_hole")
 
+    def test_from_ngon_mesh(self):
+        # Arrange
+        flat_point_values = [0, 0, 0, 5, 0, 0, 0, 0, 5,
+                             0, 0, 0, 5, 0, 0, 5, 5, 0, 0, 5, 0,
+                             0, 0, 5, 5, 0, 5, 5, 5, 5, 0, 5, 5, -2.5, 2.5, 5]
+        ngon_mesh_indices = [3, 0, 1, 2, 
+                             4, 3, 4, 5, 6,
+                             5, 7, 8, 9, 10, 11]
+        mesh = Mesh.from_ngon_mesh(flat_point_values, ngon_mesh_indices)
+
+        # Act
+        self.assertEqual(len(mesh.polygons), 6)
+        self.assertEqual(len(mesh.vertices), 12)
+        mesh.to_stl("", "test_from_ngon_mesh")
+
 
 if __name__ == '__main__':
     unittest.main()
