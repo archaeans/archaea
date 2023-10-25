@@ -1,4 +1,5 @@
 import functools
+import numpy as np
 from archaea.geometry.vector3d import Vector3d
 from archaea.geometry.point3d import Point3d
 
@@ -14,6 +15,9 @@ class Plane:
         self.u = u
         self.v = v
         self.origin = origin
+
+    def xyz():
+        return Plane(Point3d.origin, Vector3d(1, 0, 0), Vector3d(0, 1, 0))
 
     @functools.cached_property
     def normal(self):
@@ -67,3 +71,7 @@ class Plane:
         # Rotate the u and v vectors
         self.u = self.u.rotate(axis, angle)
         self.v = self.v.rotate(axis, angle)
+
+    def get_rotation_matrix(self):
+        # Create a rotation matrix that aligns the plane with the standard xyz plane
+        return np.column_stack((self.u, self.v, self.normal))

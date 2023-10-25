@@ -1,4 +1,5 @@
 import math
+import numpy as np
 from archaea.geometry.coordinate_array import CoordinateArray
 from archaea.geometry.vector3d import Vector3d
 
@@ -79,3 +80,10 @@ class Point3d(CoordinateArray):
         rotated_point = Point3d(x_rotated, y_rotated, z_rotated) + origin
 
         return rotated_point
+
+    def rotate_with_matrix(self, rotation_matrix):
+        x_transformed = self.x * rotation_matrix[0, 0] + self.y * rotation_matrix[0, 1] + self.z * rotation_matrix[0, 2]
+        y_transformed = self.x * rotation_matrix[1, 0] + self.y * rotation_matrix[1, 1] + self.z * rotation_matrix[1, 2]
+        z_transformed = self.x * rotation_matrix[2, 0] + self.y * rotation_matrix[2, 1] + self.z * rotation_matrix[2, 2]
+
+        return Point3d(x_transformed, y_transformed, z_transformed)
