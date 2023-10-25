@@ -32,11 +32,12 @@ class BoundingBox:
     
     @classmethod
     def from_points_in_plane(cls, points: "list[Point3d]", plane: Plane):
-        # Extract the rotation matrix from the new plane
-        rotation_matrix = plane.get_rotation_matrix()
-
         # Transform the points to the new coordinate system
-        transformed_points = [point.rotate_with_matrix(rotation_matrix) for point in points]
+        transformed_points = []
+        
+        for point in points:
+            p = plane.plane_coordinates(point)
+            transformed_points.append(Point3d(p[0], p[1], point.z))
 
         # Find the bounding box in the new coordinate system
         x_values = [p.x for p in transformed_points]
@@ -49,14 +50,8 @@ class BoundingBox:
         max_y = max(y_values)
         max_z = max(z_values)
 
-        # Define the inverse rotation matrix to transform back to the standard XYZ plane
-        inverse_rotation_matrix = np.linalg.inv(rotation_matrix)
-
-        # Apply the inverse rotation to find min and max aligned with the standard XYZ plane
-        min_point = Point3d(min_x, min_y, min_z).rotate_with_matrix(inverse_rotation_matrix)
-        max_point = Point3d(max_x, max_y, max_z).rotate_with_matrix(inverse_rotation_matrix)
-
-        return cls(min_point.x, min_point.y, min_point.z, max_point.x, max_point.y, max_point.z, plane)
+        # return cls(min_point.x, min_point.y, min_point.z, max_point.x, max_point.y, max_point.z, plane)
+        return cls(min_x, min_y, min_z, max_x, max_y, max_z, plane)
     
     @classmethod
     def from_2_points(cls, p1: Point3d, p2: Point3d, plane: Plane):

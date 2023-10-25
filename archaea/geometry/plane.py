@@ -9,7 +9,7 @@ class Plane:
     v: Vector3d
     origin: Point3d
 
-    def __init__(self, origin, u, v):
+    def __init__(self, origin: Point3d, u: Vector3d, v: Vector3d):
         if u.dot(v) > 1e-5:
             raise 'u-v should be orthogonal'
         self.u = u
@@ -59,18 +59,12 @@ class Plane:
         if origin_point is None:
             origin_point = self.origin
 
-        # Calculate the vector from the origin to the point
-        vector_to_point = self.origin.vector_to(origin_point.position_vector)
-
         # Perform the rotation on the origin
         rotated_origin = origin_point.rotate(axis, angle)
+        rotated_u = self.u.rotate(axis, angle)
+        rotated_v = self.v.rotate(axis, angle)
 
-        # Calculate the final position of the origin after rotation
-        self.origin = rotated_origin
-
-        # Rotate the u and v vectors
-        self.u = self.u.rotate(axis, angle)
-        self.v = self.v.rotate(axis, angle)
+        return Plane(rotated_origin, rotated_u, rotated_v)
 
     def get_rotation_matrix(self):
         # Create a rotation matrix that aligns the plane with the standard xyz plane
