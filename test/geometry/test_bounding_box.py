@@ -1,4 +1,5 @@
 import unittest
+import math
 from archaea.geometry.bounding_box import BoundingBox
 from archaea.geometry.point3d import Point3d
 from archaea.geometry.vector3d import Vector3d
@@ -51,5 +52,5 @@ class TestBoundingBox(unittest.TestCase):
 
     def test_from_points_in_plane(self):
         # Assert
-        self.assertEqual(Setup.bbox_from_points_in_plane.min, Point3d(2, 2, 0))
-        self.assertEqual(Setup.bbox_from_points_in_plane.max, Point3d(6, 4, 0))
+        self.assertAlmostEqual(Setup.bbox_from_points_in_plane.max.x - Setup.bbox_from_points_in_plane.min.x, 3 * math.pow(2, 0.5))
+        self.assertAlmostEqual(Setup.bbox_from_points_in_plane.max.y - Setup.bbox_from_points_in_plane.min.y, math.pow(2, 0.5))
