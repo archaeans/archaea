@@ -10,6 +10,9 @@ class BoundingBox:
     plane: Plane
     area: float
     volume: float
+    x_dist: float
+    y_dist: float
+    z_dist: float
 
     def __init__(self, minX: float, minY: float, minZ: float, maxX: float, maxY: float, maxZ: float, plane: Plane = Plane.xyz()) -> None:
         self.min = Point3d(minX, minY, minZ)
@@ -63,8 +66,8 @@ class BoundingBox:
             (self.max.y + self.min.y) / 2,
             (self.max.z + self.min.z) / 2
         )
-        x_dist = abs(self.max.x - self.min.x)
-        y_dist = abs(self.max.y - self.min.y)
-        z_dist = abs(self.max.z - self.min.z)
-        self.volume = x_dist * y_dist * z_dist
-        self.area = 2 * ((x_dist * y_dist) + (x_dist * z_dist) + (y_dist * z_dist))
+        self.x_dist = abs(self.max.x - self.min.x)
+        self.y_dist = abs(self.max.y - self.min.y)
+        self.z_dist = abs(self.max.z - self.min.z)
+        self.volume = self.x_dist * self.y_dist * self.z_dist
+        self.area = 2 * ((self.x_dist * self.y_dist) + (self.x_dist * self.z_dist) + (self.y_dist * self.z_dist))
