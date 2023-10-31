@@ -26,6 +26,16 @@ class Vector3d(Vector):
     @property
     def length(self):
         return ((self.x ** 2) + (self.y ** 2) + (self.z ** 2)) ** 0.5
+    
+    @classmethod
+    def from_azimuth_angle(cls, angle: float):
+        wind_direction_rad = math.radians(angle)
+
+        # Calculate the velocity components Ux and Uy
+        u_x = -math.sin(wind_direction_rad)
+        u_y = -math.cos(wind_direction_rad)
+
+        return cls(u_x, u_y, 0)
 
     def cross_product(self, other):
         return Vector3d(

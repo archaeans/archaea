@@ -39,6 +39,31 @@ class TestVector3d(unittest.TestCase):
         # Assert
         self.assertEqual(Setup.vector3d_3.azimuth_angle(), 45)
 
+    def test_from_azimuth_45(self):
+        # Act
+        vector = Vector3d.from_azimuth_angle(45)
+
+        # Assert
+        self.assertAlmostEqual(vector.x, 2 ** 0.5 / -2, delta=10e-5)
+        self.assertAlmostEqual(vector.y, 2 ** 0.5 / -2, delta=10e-5)
+
+    def test_from_azimuth_90(self):
+        # Act
+        vector = Vector3d.from_azimuth_angle(90)
+
+        # Assert
+        self.assertAlmostEqual(vector.x, -1, delta=10e-5)
+        self.assertAlmostEqual(vector.y, 0, delta=10e-5)
+    
+    def test_from_azimuth_135(self):
+        # Act
+        vector = Vector3d.from_azimuth_angle(135)
+
+        # Assert
+        self.assertAlmostEqual(vector.x, 2 ** 0.5 / -2, delta=10e-5)
+        self.assertAlmostEqual(vector.y, 2 ** 0.5 / 2, delta=10e-5)
+        
+
 
 if __name__ == '__main__':
     unittest.main()
