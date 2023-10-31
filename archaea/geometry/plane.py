@@ -1,5 +1,7 @@
 import functools
 import numpy as np
+import math
+
 from archaea.geometry.vector3d import Vector3d
 from archaea.geometry.point3d import Point3d
 
@@ -29,6 +31,18 @@ class Plane:
         normal = u_direction.cross_product(origin_point.vector_to(point_3))
         v_direction = u_direction.cross_product(normal.normalize())
         return cls(origin_point, u_direction, v_direction)
+    
+    @classmethod
+    def get_xy_plane_for_angle(cls, origin_point: Point3d, angle: float):
+        wind_direction_rad = math.radians(angle)
+
+        # Calculate the velocity components Ux and Uy
+        v_x = -math.sin(wind_direction_rad)
+        v_y = -math.cos(wind_direction_rad)
+
+        v = Vector3d(v_x, v_y, 0)
+        u = v.cross_product(Vector3d(0, 0, 1))
+        return cls(origin_point, u, v)
 
     def point_at(self, u, v):
         return self.origin.move(self.u.scale(u) + self.v.scale(v))
